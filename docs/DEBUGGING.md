@@ -132,6 +132,8 @@ npm run verify:live
 
 This check is read-only. It does not verify real password login, authenticated writes, uploads, or approval actions; those need separate end-to-end verification.
 
+The live verifier explicitly requests unpublished content and checks anonymous reads of ID history, delegated permissions, and staff audit tables. An empty response confirms that the request exposed no rows; it does not prove every policy path is safe, especially when a table has no matching records. Keep authenticated role tests and backup/restore verification in the release checklist.
+
 ## Important debugging rules
 
 - Never log passwords, session tokens, secret keys, or private resident details.
