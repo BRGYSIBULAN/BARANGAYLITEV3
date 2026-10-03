@@ -38,6 +38,10 @@ for (const [table, def] of Object.entries(CONTENT)) {
   assert.equal(result.ok, true, `${table} HTTP ${result.status}`);
   assert.ok(Array.isArray(result.data));
   console.log(`PASS: ${table} existing column contract and public read access.`);
+  // Ask for unpublished rows explicitly; filtering only published rows cannot prove RLS isolation.
+  const hidden = await get(`${table}?select=id&${def.flag}=eq.false&limit=1`);
+  assert.ok([401, 403].includes(hidden.status) || (hidden.ok && Array.isArray(hidden.data) && hidden.data.length === 0), `Anonymous access exposed unpublished ${table}`);
+  console.log(`PASS: anonymous caller cannot read unpublished ${table}.`);
 }
 for (const section of ['officials', 'staff', 'functionaries']) {
   const result = await rpc('list_public_directory_records', { p_section: section, p_offset: 0, p_limit: 1, p_excluded_subcategories: [] });
@@ -52,7 +56,7 @@ const deniedDirectory = await rpc('staff_list_directory_records', { p_section: '
 assert.ok([401, 403].includes(deniedDirectory.status), `Anonymous staff Directory RPC must be denied, got HTTP ${deniedDirectory.status}`);
 console.log('PASS: anonymous caller cannot execute staff Directory listing.');
 // Both a denied request and an empty RLS-filtered response are safe for anonymous users.
-for (const table of ['profiles', 'verification_records', 'content_admin_applications']) {
+for (const table of ['profiles', 'verification_records', 'verification_record_history', 'content_admin_applications', 'staff_delegated_permissions', 'staff_activity_logs', 'activity_log_deletions']) {
   const result = await get(`${table}?select=*&limit=1`);
   assert.ok([401, 403].includes(result.status) || (result.ok && Array.isArray(result.data) && result.data.length === 0), `Anonymous access must not expose ${table}`);
   console.log(`PASS: anonymous ${table} access returns no private rows.`);
