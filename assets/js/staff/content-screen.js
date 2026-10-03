@@ -7,6 +7,7 @@ import { CONTENT, VERIFICATION_FIELDS, DIRECTORY_CATEGORY_OPTIONS } from '../dat
 import { element as el } from '../core/dom.js';
 import { button, heading, badge, recordTable, editorDialog, confirmationDialog, detailsDialog, dateText } from './ui.js';
 import { fullName, idStatus } from '../data/id-model.js';
+import { showIdHistory } from './id-history.js';
 
 /** Resolve ordinary content routes; personnel Directory routes use directory-screen.js. */
 export function contentScreen(route) {
@@ -49,7 +50,7 @@ export function editFields(route, original = {}) {
 function localDateTime(value) { if (!value) return ''; const d = new Date(value); if (Number.isNaN(d.getTime())) return ''; return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16); }
 
 /** Mount returns cleanup immediately so navigation can protect an in-progress editor. */
-export function mountContent(root, route, services, isCurrent) {
+export function mountContent(root, route, services, isCurrent, { canViewHistory = false } = {}) {
   const verification = route === 'verification';
   const screen = verification ? null : contentScreen(route);
   const table = screen?.table || route; const def = verification ? null : screen.def;
@@ -186,6 +187,8 @@ export function mountContent(root, route, services, isCurrent) {
   }
   function actions(row) {
     const result = [button('View', () => openDetails(row)), button('Edit', () => openEditor(row))];
+    // The shell hides this from delegated editors; service and database enforce admin access too.
+    if (verification && canViewHistory) result.push(button('History', () => { dialog = showIdHistory(row, service, active); }));
     if (verification) result.push(button('QR / Download', async () => { try { const { showQr } = await import('./qr.js'); if (active()) dialog = await showQr(row, { isCurrent: active }); } catch (error) { if (active()) message.textContent = error.message; } }));
     result.push(button('Delete', event => remove(row, event.currentTarget))); return result;
   }

@@ -125,7 +125,7 @@ export async function startWorkspace(workspace) {
         else if (route === 'editors') currentCleanup = mountAccounts(view, services, isCurrent);
         else if (route === 'activity') currentCleanup = mountActivity(view, services, isCurrent);
         else if (DIRECTORY_ROUTE_KEYS.includes(route)) currentCleanup = mountDirectory(view, route, services, isCurrent);
-        else currentCleanup = mountContent(view, route, services, isCurrent);
+        else currentCleanup = mountContent(view, route, services, isCurrent, { canViewHistory: isAdmin });
         return currentCleanup;
       } catch (error) {
         if (!isCurrent()) return;

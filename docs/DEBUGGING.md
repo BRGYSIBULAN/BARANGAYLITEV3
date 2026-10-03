@@ -1,5 +1,13 @@
 # Troubleshooting guide
 
+## ID record change history
+
+System Admin > ID records > History reads `verification_record_history` through `verification.history`. The database trigger `private.log_verification_record_history` captures INSERT/UPDATE/DELETE in the same transaction as the ID write. It records only ID-editor fields, not QR tokens, timestamps, or Directory-only metadata, and skips updates with no relevant changes. Actor identity comes from `auth.uid()` and the existing profile; privileged operations without a user are explicitly labeled System / database operation. Time is displayed in Manila time.
+
+The history table enables RLS with active-admin-only SELECT and no client write/delete grants. History survives deletion of an ID or staff account and is separate from deletable activity logs. The current UI opens history from existing ID rows; deleted-record history remains retained in the database. Historical before/after values cannot be backfilled from the older summary-only logs. Tracking begins with migration `20261003101419_id_record_change_history.sql`.
+
+Check `staff/id-history.js` for modal pagination, safe text rendering, errors/retry, and cleanup. `staff/workspace.js` exposes the button only in the System Admin shell; both the service and RLS independently enforce admin access. Run `tests/id-history.test.js` for UI/service regressions. Database smoke tests used a temporary synthetic table attached to the real trigger, asserted insert/update/delete and no-op behavior, and rolled back all test rows. The migration source uses the version assigned by Supabase because the local CLI could not initialize its profile directory.
+
 ## ID duplicate warnings and quick filters
 
 `data/verification.js` checks duplicate control numbers before saves that include an ID number. It excludes the edited record. Creating a record or changing name fields also checks the complete first/middle/last name (case insensitive); partial edits read the existing name first. Blank middle names match null or empty values. `staff/content-screen.js` asks for explicit confirmation when names match; duplicate ID numbers cannot use that override. Failed checks preserve the form and prevent the write. These are preflight warnings, not a replacement for database uniqueness constraints: simultaneous saves and inconsistent legacy whitespace still require database-side integrity rules. No schema or existing records are changed.

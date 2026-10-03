@@ -135,5 +135,15 @@ export function createVerification(client, auth) {
     ]);
     return { total, valid, expired, due, other: total - valid - expired, monthly };
   }
-  return Object.freeze({ verifyManual, verifyQr, list, save, remove, overview });
+  /** Detailed identity history is System-Admin-only; database RLS repeats this guard. */
+  async function history(id, { page = 0, pageSize = 20 } = {}) {
+    await auth.requireStaff(['admin']);
+    if (!/^[1-9]\d*$/.test(String(id)) || !Number.isInteger(page) || page < 0 || !Number.isInteger(pageSize) || pageSize < 1 || pageSize > 50) throw new Error('Invalid history request.');
+    const result = await client.from('verification_record_history')
+      .select('id,occurred_at,actor_name,actor_role,operation,old_values,new_values', { count: 'exact' })
+      .eq('record_id', id).order('occurred_at', { ascending: false }).order('id', { ascending: false })
+      .range(page * pageSize, (page + 1) * pageSize - 1);
+    return { rows: unwrap(result) || [], count: result.count ?? 0 };
+  }
+  return Object.freeze({ verifyManual, verifyQr, list, save, remove, overview, history });
 }
