@@ -55,7 +55,7 @@ export function mountContent(root, route, services, isCurrent) {
   const table = screen?.table || route; const def = verification ? null : screen.def;
   const service = verification ? services.verification : services.content;
   const itemLabel = verification ? 'ID record' : screen.itemLabel || ({ announcements: 'announcement', services: 'service', officials: 'official', directory_entries: 'directory entry', disclosures: 'disclosure', forms: 'form', gallery_items: 'gallery item', pages: 'barangay page' })[table];
-  let dialog, page = 0, generation = 0, disposed = false;
+  let dialog, page = 0, generation = 0, disposed = false, searchTimer;
   const message = el('p', '', { role: 'status', class: 'module-message' });
   const active = () => !disposed && isCurrent();
   async function openEditor(row = {}) {
@@ -98,15 +98,36 @@ export function mountContent(root, route, services, isCurrent) {
   }
   heading(root, verification ? 'ID records & QR codes' : screen.label, verification ? 'Create, view, update, delete, and download print-ready verification QR codes.' : screen.description || `Create, view, update, and delete ${screen.label.toLowerCase()} from one screen.`, [button(`+ Add ${itemLabel}`, () => openEditor(), true)]);
   const toolbar = el('form', '', { class: 'list-toolbar', role: 'search' });
-  const search = el('input', '', { type: 'search', maxlength: 100, placeholder: verification ? 'Search ID number…' : screen?.itemLabel ? `Search ${screen.label.toLowerCase()}…` : 'Search name or title…', 'aria-label': verification ? 'Search ID number' : `Search ${screen?.label || 'name or title'}` });
+  const search = el('input', '', { type: 'search', maxlength: 100, placeholder: verification ? 'Search name, ID number, or designation…' : screen?.itemLabel ? `Search ${screen.label.toLowerCase()}…` : 'Search name or title…', 'aria-label': verification ? 'Search name, ID number, or designation' : `Search ${screen?.label || 'name or title'}` });
   const filter = el('select', '', { 'aria-label': verification ? 'Stored status filter' : 'Visibility filter' });
   (verification ? [['all', 'All stored statuses'], ['ACTIVE', 'Stored: ACTIVE'], ['INACTIVE', 'Stored: INACTIVE'], ['EXPIRED', 'Stored: EXPIRED']] : [['all', 'All records'], ['published', 'Published / active'], ['draft', 'Draft / hidden']]).forEach(([value, text]) => filter.append(el('option', text, { value })));
-  const clearFilters = button('Clear filters', () => { search.value = ''; filter.value = 'all'; appliedSearch = ''; appliedFilter = 'all'; load(0); });
+  const clearFilters = button('Clear filters', () => { clearTimeout(searchTimer); search.value = ''; filter.value = 'all'; appliedSearch = ''; appliedFilter = 'all'; message.textContent = ''; load(0); });
   toolbar.append(search, filter, el('button', 'Search', { type: 'submit' }), clearFilters);
   const slot = el('div'); const footer = el('div', '', { class: 'list-footer' }); const summary = el('span', 'Loading records…');
   const previous = button('← Previous', () => load(page - 1)); const next = button('Next →', () => load(page + 1)); footer.append(summary, previous, next); root.append(toolbar, message, slot, footer);
   let appliedSearch = '', appliedFilter = 'all';
-  toolbar.addEventListener('submit', event => { event.preventDefault(); appliedSearch = search.value.trim(); appliedFilter = filter.value; load(0); });
+  function applySearch() {
+    clearTimeout(searchTimer);
+    if (!active()) return;
+    message.textContent = '';
+    appliedSearch = search.value.trim(); appliedFilter = filter.value; load(0);
+  }
+  toolbar.addEventListener('submit', event => { event.preventDefault(); applySearch(); });
+  if (verification) {
+    const help = el('p', 'Results update as you type. Try part of a name, an ID number, or a designation; name words can be in any order.', { id: 'id-search-help', class: 'module-message' });
+    toolbar.after(help); search.setAttribute('aria-describedby', help.id);
+    summary.setAttribute('role', 'status'); summary.setAttribute('aria-live', 'polite');
+    // Invalidate older responses immediately, including during the debounce window.
+    // Hide stale actions so the operator cannot mistake an old row for a new match.
+    const scheduleSearch = event => {
+      clearTimeout(searchTimer); generation++; slot.replaceChildren();
+      previous.disabled = next.disabled = true; summary.textContent = 'Waiting for search…';
+      if (!event.isComposing) searchTimer = setTimeout(applySearch, 300);
+    };
+    search.addEventListener('input', scheduleSearch);
+    search.addEventListener('compositionend', scheduleSearch);
+    filter.addEventListener('change', applySearch);
+  }
   const ordinaryColumns = verification ? [] : [
     { key: def.title },
     ...(['officials', 'directory_entries', 'forms', 'disclosures', 'gallery_items'].includes(table)
@@ -117,6 +138,7 @@ export function mountContent(root, route, services, isCurrent) {
   ];
   const columns = verification ? [
     { key: 'control_number' }, { key: 'full_name', label: 'Name', render: fullName },
+    { key: 'designation' },
     { key: 'date_acquired', render: row => dateText(row.date_acquired) }, { key: 'expiration_date', render: row => dateText(row.expiration_date) },
     { key: 'status', label: 'Current validity', render: row => { const status = idStatus(row); return badge(status, status === 'Valid' ? 'good' : 'warning'); } },
   ] : ordinaryColumns;
@@ -141,17 +163,20 @@ export function mountContent(root, route, services, isCurrent) {
     result.push(button('Delete', event => remove(row, event.currentTarget))); return result;
   }
   async function load(target) {
+    if (!active()) return;
     const request = ++generation; previous.disabled = next.disabled = true; summary.textContent = 'Loading…';
+    if (verification) slot.replaceChildren();
     try {
       const options = { page: Math.max(0, target), pageSize: 20, search: appliedSearch, ...(verification ? { status: appliedFilter } : { visibility: appliedFilter, ...screen.listOptions }) };
       const data = verification ? await service.list(options) : await service.list(table, options);
       if (!active() || request !== generation) return;
       if (!data.rows.length && target > 0) { await load(target - 1); return; }
       page = options.page; slot.replaceChildren(recordTable(data.rows, columns, actions)); summary.textContent = `${data.count} records · Page ${page + 1}`;
+      if (verification && !data.rows.length) summary.textContent = 'No matching records. Try fewer name words, part of the ID number, or All stored statuses.';
       previous.disabled = page === 0; next.disabled = (page + 1) * 20 >= data.count;
     } catch (error) { if (active() && request === generation) { message.textContent = error.message; summary.textContent = 'Could not load records. Search to retry.'; } }
   }
   load(0);
-  const cleanup = () => { disposed = true; generation++; dialog?.(); };
+  const cleanup = () => { disposed = true; generation++; clearTimeout(searchTimer); dialog?.(); };
   cleanup.canLeave = () => !dialog?.canLeave || dialog.canLeave(); return cleanup;
 }
