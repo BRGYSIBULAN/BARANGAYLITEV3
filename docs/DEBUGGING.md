@@ -1,5 +1,11 @@
 # Troubleshooting guide
 
+## ID record live search
+
+`staff/content-screen.js` searches ID records after a 300 ms typing pause; Enter/Search runs immediately. Status changes and Clear filters reset to page one. Matching table rows act as live suggestions with existing View/Edit/QR actions. Help text and live result counts explain empty results. Old rows are cleared and request generations are invalidated as soon as typing changes, preventing delayed responses from showing stale actions. Cleanup cancels pending timers.
+
+`data/verification.js` keeps the existing verification permission and RLS. Each word must match control number, first/middle/last name, or designation; word order does not matter. Values are quoted for PostgREST and LIKE wildcards are escaped. Results remain bounded and paginated across the database, rather than filtering only the current page. Public verification RPCs are unchanged. Diagnose access errors first, then the selected stored-status filter and search terms. `tests/id-search.test.js` covers protected filters, special characters, debounce, stale responses, clear, and cleanup without live records.
+
 ## Previous/default design flashes during reload
 
 Live HTML shells and `preview.html` start with `data-design-state="loading"`. The central stylesheet hides the themed content and displays a small neutral loading notice. `design/boot.js` is dependency-free and loads before the SDK, so a missing entry script gets a retry message after 12 seconds instead of an indefinite blank page. A failed theme read does not silently reveal a guessed preset.

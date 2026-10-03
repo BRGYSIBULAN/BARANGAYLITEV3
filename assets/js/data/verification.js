@@ -40,7 +40,13 @@ export function createVerification(client, auth) {
     if (typeof search !== 'string' || search.length > 100) throw new Error('Search must be at most 100 characters.');
     if (!['all', 'ACTIVE', 'INACTIVE', 'EXPIRED'].includes(status)) throw new Error('Invalid status filter.');
     let query = client.from('verification_records').select(['id', 'qr_token', ...VERIFICATION_FIELDS].join(','), { count: 'exact' });
-    if (search) query = query.ilike('control_number', '%' + search.replace(/[\\%_]/g, '\\$&') + '%');
+    // Each word may match any identity field, so first/last names work in either order.
+    // Quote PostgREST values and escape LIKE wildcards to keep typed text out of filter syntax.
+    for (const word of search.trim().split(/\s+/).filter(Boolean)) {
+      const pattern = JSON.stringify('%' + word.replace(/[\\%_*]/g, '\\$&') + '%');
+      query = query.or(['control_number', 'first_name', 'middle_name', 'last_name', 'designation']
+        .map(field => `${field}.ilike.${pattern}`).join(','));
+    }
     if (status !== 'all') query = query.eq('status', status);
     const result = await query.order('control_number').order('id').range(page * pageSize, (page + 1) * pageSize - 1);
     return { rows: unwrap(result) || [], count: result.count ?? 0 };
