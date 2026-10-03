@@ -34,11 +34,12 @@ export function createVerification(client, auth) {
     return rows?.[0] || null;
   }
   /** Private records require the exact protected permission and bounded pagination. */
-  async function list({ page = 0, pageSize = 50, search = '', status = 'all' } = {}) {
+  async function list({ page = 0, pageSize = 50, search = '', status = 'all', validity = 'all' } = {}) {
     await auth.requirePermission('verification');
     if (!Number.isInteger(page) || page < 0 || !Number.isInteger(pageSize) || pageSize < 1 || pageSize > 100) throw new Error('Invalid pagination.');
     if (typeof search !== 'string' || search.length > 100) throw new Error('Search must be at most 100 characters.');
     if (!['all', 'ACTIVE', 'INACTIVE', 'EXPIRED'].includes(status)) throw new Error('Invalid status filter.');
+    if (!['all', 'valid', 'expired', 'expiring'].includes(validity)) throw new Error('Invalid validity filter.');
     let query = client.from('verification_records').select(['id', 'qr_token', ...VERIFICATION_FIELDS].join(','), { count: 'exact' });
     // Each word may match any identity field, so first/last names work in either order.
     // Quote PostgREST values and escape LIKE wildcards to keep typed text out of filter syntax.
@@ -48,11 +49,26 @@ export function createVerification(client, auth) {
         .map(field => `${field}.ilike.${pattern}`).join(','));
     }
     if (status !== 'all') query = query.eq('status', status);
+    // Reuse the same inclusive UTC expiry rules as ID badges and the existing dashboard.
+    // These predicates run before pagination, so matches are found across all records.
+    if (validity !== 'all') {
+      const { verificationDate } = await import('./id-model.js');
+      const today = verificationDate();
+      if (validity === 'expired') query = query.or(`status.eq.EXPIRED,and(status.eq.ACTIVE,expiration_date.lt.${today})`);
+      else {
+        query = query.eq('status', 'ACTIVE');
+        if (validity === 'valid') query = query.or(`expiration_date.is.null,expiration_date.gte.${today}`);
+        else {
+          const end = new Date(today + 'T00:00:00Z'); end.setUTCDate(end.getUTCDate() + 30);
+          query = query.gte('expiration_date', today).lte('expiration_date', end.toISOString().slice(0, 10));
+        }
+      }
+    }
     const result = await query.order('control_number').order('id').range(page * pageSize, (page + 1) * pageSize - 1);
     return { rows: unwrap(result) || [], count: result.count ?? 0 };
   }
   /** Update only editable ID details; the token and database ID are never in the payload. */
-  async function save(values, id = null) {
+  async function save(values, id = null, { allowSameName = false } = {}) {
     await auth.requirePermission('verification');
     // qr_token is database-owned. Editing an ID must not invalidate printed QR codes.
     const payload = pickFields(values, VERIFICATION_FIELDS);
@@ -60,6 +76,37 @@ export function createVerification(client, auth) {
     if ((id === null || Object.hasOwn(payload, 'control_number')) && !payload.control_number?.trim()) throw new Error('Control number is required.');
     if (payload.status && !['ACTIVE', 'INACTIVE', 'EXPIRED'].includes(payload.status)) throw new Error('Invalid status.');
     if (payload.date_acquired && payload.expiration_date && payload.expiration_date < payload.date_acquired) throw new Error('Expiration must not precede the acquisition date.');
+    // A preflight catches likely mistakes; database constraints remain the final guard
+    // against simultaneous saves. Namesakes require confirmation, never automatic merging.
+    const escapeLike = value => String(value).trim().replace(/[\\%_]/g, '\\$&');
+    const candidates = () => {
+      let query = client.from('verification_records').select('id,control_number');
+      if (id !== null) query = query.neq('id', id);
+      return query;
+    };
+    if (payload.control_number) {
+      payload.control_number = payload.control_number.trim();
+      const matches = unwrap(await candidates().ilike('control_number', escapeLike(payload.control_number)).limit(1));
+      if (matches?.length) {
+        const error = new Error('This ID number already exists. Open the existing record or use a different ID number.');
+        error.code = 'DUPLICATE_ID_NUMBER'; throw error;
+      }
+    }
+    const nameKeys = ['first_name', 'middle_name', 'last_name'];
+    if (!allowSameName && (id === null || nameKeys.some(key => Object.hasOwn(payload, key)))) {
+      // Partial edits must be compared with the saved name, not just the changed field.
+      const original = id === null ? {} : unwrap(await client.from('verification_records').select(nameKeys.join(',')).eq('id', id).single());
+      const person = { ...original, ...payload };
+      if (person.first_name?.trim() && person.last_name?.trim()) {
+        let query = candidates().ilike('first_name', escapeLike(person.first_name)).ilike('last_name', escapeLike(person.last_name));
+        query = person.middle_name?.trim() ? query.ilike('middle_name', escapeLike(person.middle_name)) : query.or('middle_name.is.null,middle_name.eq.');
+        const matches = unwrap(await query.limit(1));
+        if (matches?.length) {
+          const error = new Error(`A record with the same full name already exists (ID ${matches[0].control_number}). Review it before creating or changing another record.`);
+          error.code = 'DUPLICATE_ID_NAME'; throw error;
+        }
+      }
+    }
     const query = id === null ? client.from('verification_records').insert(payload) : client.from('verification_records').update(payload).eq('id', id);
     return unwrap(await query.select(['id', 'qr_token', ...VERIFICATION_FIELDS].join(',')).single());
   }

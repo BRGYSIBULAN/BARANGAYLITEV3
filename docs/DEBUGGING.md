@@ -1,5 +1,11 @@
 # Troubleshooting guide
 
+## ID duplicate warnings and quick filters
+
+`data/verification.js` checks duplicate control numbers before saves that include an ID number. It excludes the edited record. Creating a record or changing name fields also checks the complete first/middle/last name (case insensitive); partial edits read the existing name first. Blank middle names match null or empty values. `staff/content-screen.js` asks for explicit confirmation when names match; duplicate ID numbers cannot use that override. Failed checks preserve the form and prevent the write. These are preflight warnings, not a replacement for database uniqueness constraints: simultaneous saves and inconsistent legacy whitespace still require database-side integrity rules. No schema or existing records are changed.
+
+The All IDs / Valid / Expired / Expiring within 30 days buttons use the existing UTC verification date and inclusive expiry-day rules. Valid includes ACTIVE records without an expiry; Expired includes stored EXPIRED and ACTIVE records whose expiry is before today. Expiring includes only ACTIVE records with expiry from today through day 30. Each quick filter resets the stored-status selector; changing that selector clears the quick filter. Search and pagination remain server-side. Run `tests/id-improvements.test.js` and the UI regression tests when changing these flows.
+
 ## ID record live search
 
 `staff/content-screen.js` searches ID records after a 300 ms typing pause; Enter/Search runs immediately. Status changes and Clear filters reset to page one. Matching table rows act as live suggestions with existing View/Edit/QR actions. Help text and live result counts explain empty results. Old rows are cleared and request generations are invalidated as soon as typing changes, preventing delayed responses from showing stale actions. Cleanup cancels pending timers.

@@ -73,7 +73,16 @@ export function mountContent(root, route, services, isCurrent) {
         if (!file && !Object.keys(payload).length) return row;
         try {
           let saved;
-          if (verification) saved = await service.save(payload, row.id ?? null);
+          if (verification) {
+            try { saved = await service.save(payload, row.id ?? null); }
+            catch (error) {
+              if (error.code !== 'DUPLICATE_ID_NAME') throw error;
+              // Full names are not unique identities. Require a deliberate decision for namesakes.
+              const confirmed = await confirmationDialog({ title: 'Possible duplicate person', description: error.message + ' Continue only if you have verified that this is a different person.', confirmLabel: 'Save as a different person' });
+              if (!confirmed || !active()) throw new Error('Not saved. Review the matching record or correct the name before trying again.');
+              saved = await service.save(payload, row.id ?? null, { allowSameName: true });
+            }
+          }
           else {
             let prepared = file;
             if (file && def.bucket === 'gallery-media') { const { optimizeImage } = await import('../media/images.js'); prepared = await optimizeImage(file); }
@@ -81,7 +90,7 @@ export function mountContent(root, route, services, isCurrent) {
           }
           writePerformed = true;
           return saved;
-        } catch (error) { if (!row.id) error.message += ' If the connection dropped, close and refresh the list before creating again to avoid duplicates.'; throw error; }
+        } catch (error) { if (!row.id && !error.code?.startsWith('DUPLICATE_ID_') && !error.message.startsWith('Not saved.')) error.message += ' If the connection dropped, close and refresh the list before creating again to avoid duplicates.'; throw error; }
       },
       afterSave: async saved => {
         if (!active()) return;
@@ -101,11 +110,29 @@ export function mountContent(root, route, services, isCurrent) {
   const search = el('input', '', { type: 'search', maxlength: 100, placeholder: verification ? 'Search name, ID number, or designation…' : screen?.itemLabel ? `Search ${screen.label.toLowerCase()}…` : 'Search name or title…', 'aria-label': verification ? 'Search name, ID number, or designation' : `Search ${screen?.label || 'name or title'}` });
   const filter = el('select', '', { 'aria-label': verification ? 'Stored status filter' : 'Visibility filter' });
   (verification ? [['all', 'All stored statuses'], ['ACTIVE', 'Stored: ACTIVE'], ['INACTIVE', 'Stored: INACTIVE'], ['EXPIRED', 'Stored: EXPIRED']] : [['all', 'All records'], ['published', 'Published / active'], ['draft', 'Draft / hidden']]).forEach(([value, text]) => filter.append(el('option', text, { value })));
-  const clearFilters = button('Clear filters', () => { clearTimeout(searchTimer); search.value = ''; filter.value = 'all'; appliedSearch = ''; appliedFilter = 'all'; message.textContent = ''; load(0); });
+  let appliedValidity = 'all';
+  const quickFilters = verification ? el('div', '', { class: 'list-toolbar', role: 'group', 'aria-label': 'Current ID validity' }) : null;
+  function selectValidity(value) {
+    appliedValidity = value;
+    quickFilters?.querySelectorAll('button').forEach(control => {
+      const selected = control.dataset.validity === value;
+      control.setAttribute('aria-pressed', String(selected)); control.classList.toggle('primary', selected);
+    });
+  }
+  if (verification) {
+    // Quick filters replace the stored-status choice to avoid contradictory hidden criteria.
+    for (const [value, label] of [['all', 'All IDs'], ['valid', 'Valid'], ['expired', 'Expired'], ['expiring', 'Expiring within 30 days']]) {
+      const control = button(label, () => { selectValidity(value); filter.value = 'all'; applySearch(); });
+      control.dataset.validity = value; quickFilters.append(control);
+    }
+    selectValidity('all');
+  }
+  const clearFilters = button('Clear filters', () => { clearTimeout(searchTimer); search.value = ''; filter.value = 'all'; appliedSearch = ''; appliedFilter = 'all'; selectValidity('all'); message.textContent = ''; load(0); });
   toolbar.append(search, filter, el('button', 'Search', { type: 'submit' }), clearFilters);
   const slot = el('div'); const footer = el('div', '', { class: 'list-footer' }); const summary = el('span', 'Loading records…');
   const previous = button('← Previous', () => load(page - 1)); const next = button('Next →', () => load(page + 1)); footer.append(summary, previous, next); root.append(toolbar, message, slot, footer);
   let appliedSearch = '', appliedFilter = 'all';
+  if (quickFilters) toolbar.before(quickFilters);
   function applySearch() {
     clearTimeout(searchTimer);
     if (!active()) return;
@@ -126,7 +153,7 @@ export function mountContent(root, route, services, isCurrent) {
     };
     search.addEventListener('input', scheduleSearch);
     search.addEventListener('compositionend', scheduleSearch);
-    filter.addEventListener('change', applySearch);
+    filter.addEventListener('change', () => { selectValidity('all'); applySearch(); });
   }
   const ordinaryColumns = verification ? [] : [
     { key: def.title },
@@ -167,12 +194,12 @@ export function mountContent(root, route, services, isCurrent) {
     const request = ++generation; previous.disabled = next.disabled = true; summary.textContent = 'Loading…';
     if (verification) slot.replaceChildren();
     try {
-      const options = { page: Math.max(0, target), pageSize: 20, search: appliedSearch, ...(verification ? { status: appliedFilter } : { visibility: appliedFilter, ...screen.listOptions }) };
+      const options = { page: Math.max(0, target), pageSize: 20, search: appliedSearch, ...(verification ? { status: appliedFilter, validity: appliedValidity } : { visibility: appliedFilter, ...screen.listOptions }) };
       const data = verification ? await service.list(options) : await service.list(table, options);
       if (!active() || request !== generation) return;
       if (!data.rows.length && target > 0) { await load(target - 1); return; }
       page = options.page; slot.replaceChildren(recordTable(data.rows, columns, actions)); summary.textContent = `${data.count} records · Page ${page + 1}`;
-      if (verification && !data.rows.length) summary.textContent = 'No matching records. Try fewer name words, part of the ID number, or All stored statuses.';
+      if (verification && !data.rows.length) summary.textContent = 'No matching records. Try fewer name words, part of the ID number, or Clear filters.';
       previous.disabled = page === 0; next.disabled = (page + 1) * 20 >= data.count;
     } catch (error) { if (active() && request === generation) { message.textContent = error.message; summary.textContent = 'Could not load records. Search to retry.'; } }
   }

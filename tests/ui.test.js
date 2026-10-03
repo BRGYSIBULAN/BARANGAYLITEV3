@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { parseHTML } from 'linkedom';
 import { editorDialog, fieldsForm, recordTable, labelFor, confirmationDialog, detailsDialog } from '../assets/js/staff/ui.js';
 import { verificationResult } from '../assets/js/public/verify.js';
-import { editFields } from '../assets/js/staff/content-screen.js';
+import { editFields, mountContent } from '../assets/js/staff/content-screen.js';
 import { directoryScreen, mountDirectory, officialOrder } from '../assets/js/staff/directory-screen.js';
 import { STAFF_CONTENT_ROUTES } from '../assets/js/staff/workspace.js';
 import { mountStudio } from '../assets/js/design/studio.js';
@@ -21,6 +21,59 @@ import { showRecords } from '../assets/js/core/dom.js';
 const { window } = parseHTML('<!doctype html><html><body></body></html>');
 globalThis.window = window; globalThis.document = window.document; globalThis.Node = window.Node;
 globalThis.confirm = () => true;
+
+test('ID quick filters reset status, retain search, and Clear filters resets validity', async () => {
+  const root = document.createElement('main'); document.body.append(root);
+  const calls = [];
+  const cleanup = mountContent(root, 'verification', { verification: { list: async options => { calls.push(options); return { rows: [], count: 0 }; } } }, () => true);
+  try {
+    root.querySelector('input[type=search]').value = 'Example';
+    const expiring = [...root.querySelectorAll('button')].find(button => button.textContent === 'Expiring within 30 days');
+    expiring.click();
+    assert.equal(calls.at(-1).validity, 'expiring');
+    assert.equal(calls.at(-1).search, 'Example');
+    assert.equal(calls.at(-1).status, 'all');
+    assert.equal(expiring.getAttribute('aria-pressed'), 'true');
+    const filter = root.querySelector('select'); filter.value = 'INACTIVE'; filter.dispatchEvent(new window.Event('change'));
+    assert.equal(calls.at(-1).validity, 'all');
+    assert.equal(calls.at(-1).status, 'INACTIVE');
+    expiring.click();
+    [...root.querySelectorAll('button')].find(button => button.textContent === 'Clear filters').click();
+    assert.equal(calls.at(-1).validity, 'all');
+    assert.equal(calls.at(-1).search, '');
+  } finally { cleanup(); root.remove(); }
+});
+
+test('ID namesake confirmation cancels safely and only overrides after explicit confirmation', async () => {
+  const root = document.createElement('main'); document.body.append(root);
+  const saves = [];
+  const cleanup = mountContent(root, 'verification', { verification: {
+    list: async () => ({ rows: [], count: 0 }),
+    save: async (values, id, options) => {
+      saves.push({ values, options });
+      if (!options?.allowSameName) { const error = new Error('Matching full name: TEST-OLD'); error.code = 'DUPLICATE_ID_NAME'; throw error; }
+      return { id: 2 };
+    },
+  } }, () => true);
+  const tick = () => new Promise(resolve => setImmediate(resolve));
+  try {
+    [...root.querySelectorAll('button')].find(button => button.textContent === '+ Add ID record').click();
+    const form = document.querySelector('.editor-form');
+    form.querySelector('[name=control_number]').value = 'TEST-NEW';
+    form.querySelector('[name=first_name]').value = 'Example';
+    form.querySelector('[name=last_name]').value = 'Resident';
+    form.dispatchEvent(new window.Event('submit', { cancelable: true })); await tick();
+    [...document.querySelectorAll('.confirm-dialog button')].find(button => button.textContent === 'Cancel').click(); await tick();
+    assert.equal(saves.length, 1);
+    assert.equal(form.querySelector('[name=control_number]').value, 'TEST-NEW');
+    assert.match(form.textContent, /Not saved/);
+    form.dispatchEvent(new window.Event('submit', { cancelable: true })); await tick();
+    [...document.querySelectorAll('.confirm-dialog button')].find(button => button.textContent === 'Save as a different person').click(); await tick();
+    assert.equal(saves.length, 3);
+    assert.equal(saves.at(-1).options.allowSameName, true);
+    assert.equal(document.querySelector('.editor-form'), null);
+  } finally { cleanup(); root.remove(); }
+});
 globalThis.matchMedia = () => ({ matches: true });
 window.HTMLElement.prototype.showModal = function () { this.setAttribute('open', ''); };
 window.HTMLElement.prototype.close = function () { this.removeAttribute('open'); };
