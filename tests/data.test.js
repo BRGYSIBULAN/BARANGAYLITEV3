@@ -13,7 +13,26 @@ import { createStorage, ownedObjectPath } from '../assets/js/data/storage.js';
 import { createEditors } from '../assets/js/data/editors.js';
 import { createApplications } from '../assets/js/data/applications.js';
 import { createDirectory } from '../assets/js/data/directory.js';
-import { SUPABASE_URL, AUTH_STORAGE_KEY } from '../assets/js/core/con…253 tokens truncated…> { call.steps.push([name, ...args]); return chain; };
+import { SUPABASE_URL, AUTH_STORAGE_KEY } from '../assets/js/core/config.js';
+
+/** A thenable query builder records requests without touching the live database. */
+function mockClient({ result = { data: [], error: null, count: 0 }, user = { id: 'existing-user' }, profile = { role: 'admin', is_active: true } } = {}) {
+  const log = [];
+  const client = {
+    log,
+    auth: {
+      getUser: async () => ({ data: { user }, error: null }),
+      signInWithPassword: async values => { log.push({ signIn: values }); return { data: { user }, error: null }; },
+      signOut: async options => { log.push({ signOut: options }); return { error: null }; },
+      getSession: async () => ({ data: { session: null }, error: null }),
+    },
+    from(table) {
+      const call = { table, steps: [] };
+      log.push(call);
+      const chain = {};
+      // Duplicate-ID preflight uses these filters before the unchanged ID update.
+      for (const name of ['select', 'eq', 'neq', 'ilike', 'limit', 'or', 'in', 'order', 'range', 'single', 'maybeSingle', 'insert', 'update', 'upsert', 'delete']) {
+        chain[name] = (...args) => { call.steps.push([name, ...args]); return chain; };
       }
       chain.then = (resolve, reject) => Promise.resolve(table === 'profiles' ? { data: profile, error: null } : typeof result === 'function' ? result(call) : result).then(resolve, reject);
       return chain;
