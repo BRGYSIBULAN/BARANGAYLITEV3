@@ -20,6 +20,14 @@ The All IDs / Valid / Expired / Expiring within 30 days buttons use the existing
 
 `data/verification.js` keeps the existing verification permission and RLS. Each word must match control number, first/middle/last name, or designation; word order does not matter. Values are quoted for PostgREST and LIKE wildcards are escaped. Results remain bounded and paginated across the database, rather than filtering only the current page. Public verification RPCs are unchanged. Diagnose access errors first, then the selected stored-status filter and search terms. `tests/id-search.test.js` covers protected filters, special characters, debounce, stale responses, clear, and cleanup without live records.
 
+## Public RPC rate limits
+
+`public.enforce_public_rate_limit(endpoint)` runs inside manual verification, QR verification, Content Admin eligibility, and public metric RPCs. It reads the Supabase/PostgREST client IP from `request.headers`, hashes it with SHA-256, and atomically updates one fixed-window row in `private.public_rate_limits`. Raw IPs, user-agent values, ID numbers, names, and QR tokens are not stored in the counter table. The table has RLS enabled and no `anon`, `authenticated`, or `service_role` table privileges; only the constrained `SECURITY DEFINER` helper can update it.
+
+A normal blocked response is HTTP 429 with code `RATE_LIMITED`, the generic message “Too many requests. Please wait before trying again.”, and `Retry-After`. Do not remove the helper call to hide this error. First check which endpoint reached its allowance, wait for the fixed window, and confirm there is no automated retry loop. Manual verification allows 15 requests per 10 minutes per IP, QR allows 120 per 10 minutes, eligibility allows 8 per hour, and public metrics allow 300 per 10 minutes. These thresholds are shared by users behind the same public IP and can be bypassed by a truly distributed attacker, so they are defense in depth rather than identity authentication.
+
+Migrations `20261012114504_public_rate_limiting.sql` and `20261012114649_harden_rate_limit_fingerprint.sql` preserve the original function signatures and printed QR tokens. `tests/rate-limiting.test.js` checks the private/RLS boundary, atomic upsert, fixed server-owned thresholds, HTTP 429 contract, IP-only fingerprint, grants, and QR compatibility. The live smoke test should use random non-matching inputs and must never print resident data or the publishable key.
+
 ## Previous/default design flashes during reload
 
 Live HTML shells and `preview.html` start with `data-design-state="loading"`. The central stylesheet hides the themed content and displays a small neutral loading notice. `design/boot.js` is dependency-free and loads before the SDK, so a missing entry script gets a retry message after 12 seconds instead of an indefinite blank page. A failed theme read does not silently reveal a guessed preset.
@@ -98,7 +106,7 @@ Each JavaScript module starts with Purpose, dependencies, and Debug notes. Safeg
 | Incorrect profile/settings | `data/settings.js` | `site_settings.id=1` and existing `barangay-*` slugs, not legacy CSS/theme |
 | Wrong public module visibility | `data/visibility.js`, `staff/visibility-screen.js` | Parent Directory state, individual module/group state, and `VISIBILITY_CONFLICT` |
 | Wrong Functionaries heading/group | Directory record `category`, `data/content.js` | Use the exact local heading; verify its group visibility and `is_active` |
-| ID/QR verification fails | `data/verification.js` | Original RPC arguments and existing QR token; never expose the private table |
+| ID/QR verification fails | `data/verification.js` | Original RPC arguments, existing QR token, maintenance/visibility, then HTTP 429 `Retry-After`; never expose the private tables |
 | Upload/save problem | `data/storage.js` | Bucket policy, permitted file type/size, and `error.retainedUpload` |
 | Content Admin approval problem | `data/editors.js` | `manage-editors` action, server error, System Admin role, and activation redirect configuration |
 | Signup/activation problem | `data/applications.js` | Identify the failing stage: eligibility, Auth signup, application insert, or activation |

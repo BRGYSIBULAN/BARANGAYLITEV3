@@ -8,15 +8,25 @@ The 14 Supabase advisor warnings reviewed here are caused by callable `SECURITY 
 
 No confirmed privilege-escalation path was found in the reviewed function bodies. The functions must not be bulk-revoked or converted because doing so would break public directory loading, application eligibility, analytics, or authenticated staff operations.
 
-This result does not mean the system is risk-free. The two public endpoints described below have residual abuse or privacy risks, and leaked-password protection remains disabled.
+This result does not mean the system is risk-free. The public endpoints described below still have residual distributed-abuse risks, and leaked-password protection remains disabled.
+
+## Deployed rate-limit follow-up
+
+Migrations `20261012114504_public_rate_limiting.sql` and `20261012114649_harden_rate_limit_fingerprint.sql` now rate-limit the existing public RPCs without changing their names, arguments, returned fields, ID rows, or QR tokens. The limiter uses Supabase/PostgREST's documented `x-forwarded-for` client IP, stores only its SHA-256 fingerprint, keeps counters in the non-exposed `private` schema with RLS and no client table grants, and returns HTTP 429 with `Retry-After` after the fixed allowance.
+
+Current fixed windows are: manual ID verification 15 per 10 minutes, QR verification 120 per 10 minutes, Content Admin eligibility 8 per hour, and public metrics 300 per 10 minutes. Service/management verification bypasses the public limiter so recovery checks remain available. Counter rows are opportunistically removed after two inactive days.
+
+The new `enforce_public_rate_limit` advisor warning is intentional: the helper is `SECURITY DEFINER` because anonymous callers have no access to the private counter table. Its endpoint argument is allowlisted and owns the limit/window; callers cannot request a larger allowance, access stored fingerprints, or skip the helper inside the four protected RPCs. Calling the helper directly only spends the caller's own IP allowance.
+
+Rate limiting is defense in depth, not an absolute bot barrier. A distributed attacker can rotate IP addresses, and many legitimate users behind one public IP share an allowance. Thresholds therefore protect guessing and database load while leaving QR scanning considerably more capacity than manual search.
 
 ## Anonymous-callable functions
 
 | Function | Intended behavior and current controls | Residual risk | Recommendation |
 | --- | --- | --- | --- |
-| `can_apply_content_admin(candidate_name)` | Returns one boolean after normalizing a submitted name and checking a private helper. It does not return the matching resident record. Direct anonymous access to `private` and `verification_records` is not granted. | A caller can repeatedly try names and learn whether a matching eligible name exists. This is a privacy/enumeration risk even though record fields are not exposed. | Keep temporarily because the application workflow depends on it. Consider moving eligibility behind a rate-limited server flow or redesigning the application response so it reveals less information. |
+| `can_apply_content_admin(candidate_name)` | Returns one boolean after normalizing a submitted name and checking a private helper. It does not return the matching resident record. Direct anonymous access to `private` and `verification_records` is not granted. Requests are limited to 8 per IP per hour. | Distributed callers can rotate IPs and still test names. This is a reduced, not eliminated, privacy/enumeration risk. | Keep the rate limit and generic public errors. Consider a non-enumerating approval workflow only as a separate product change. |
 | `list_public_directory_records(...)` | Returns only the explicitly published public-directory fields. Sections are allowlisted, pagination is bounded, and only active, published records are included. ID numbers, QR tokens, acquisition/expiration dates, and private resident fields are not returned. | Normal public-directory scraping remains possible because the information is intentionally public. | Keep unchanged. The function is appropriately narrow for its public purpose. |
-| `record_public_metric(metric_key)` | Accepts only 20 allowlisted metric keys and increments a daily aggregate. It stores no visitor identity, and anonymous users cannot read or write the metrics table directly. | Automated traffic can inflate the counters or generate unnecessary database writes. These numbers are approximate and must not be used for security, billing, or legal decisions. | Keep for current lightweight analytics. If abuse becomes material, add a separately tested rate limit, write cap, or server-side collection layer. |
+| `record_public_metric(metric_key)` | Accepts only 20 allowlisted metric keys and increments a daily aggregate. It stores no visitor identity, and anonymous users cannot read or write the metrics table directly. Requests are limited to 300 per IP per 10 minutes. | Distributed traffic can still inflate the counters. These numbers remain approximate and must not be used for security, billing, or legal decisions. | Keep the rate limit and continue treating the metrics as approximate. |
 
 ## Signed-in callable functions
 

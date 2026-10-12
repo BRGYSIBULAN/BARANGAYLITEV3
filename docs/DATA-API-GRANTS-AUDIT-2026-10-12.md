@@ -1,10 +1,11 @@
 # Supabase Data API grants audit — 2026-10-12
 
-This is a read-only inventory of the live `anon` and `authenticated` table/function grants used by BRGYWEBLITEV3. It was prepared for Supabase's announced explicit Data API exposure change. No live grant, policy, function, table, account, or record was changed.
+This began as a read-only inventory of the live `anon` and `authenticated` table/function grants used by BRGYWEBLITEV3. It was prepared for Supabase's announced explicit Data API exposure change. Later versioned migrations applied the documented anonymous-write reduction and public RPC rate limits; those follow-ups did not change accounts, resident records, ID numbers, or QR tokens.
 
 ## Result
 
 - All 17 live public tables have RLS enabled.
+- The additional `private.public_rate_limits` table has RLS enabled and no browser/service table grants. Its lack of an RLS policy is an intentional deny-all boundary; only the constrained rate-limit helper accesses it as owner.
 - The tables and RPCs used by the current browser application already have explicit grants for their required Supabase roles.
 - Existing RLS policies still decide which rows each caller may access. The live verifier confirms that anonymous callers cannot read the reviewed private tables or unpublished public content.
 - Several table grants are broader than the operations made by the current browser code. RLS blocks those operations today, but narrowing the grants would add defense in depth if a policy is changed incorrectly later.
@@ -26,7 +27,7 @@ This is a read-only inventory of the live `anon` and `authenticated` table/funct
 
 ## RPC exposure required by the current application
 
-- Anonymous and authenticated: `can_apply_content_admin`, `list_public_directory_records`, `record_public_metric`, `verify_barangay_record`, and `verify_barangay_record_qr`.
+- Anonymous and authenticated: `can_apply_content_admin`, `enforce_public_rate_limit`, `list_public_directory_records`, `record_public_metric`, `verify_barangay_record`, and `verify_barangay_record_qr`. Direct calls to the rate-limit helper expose no counter rows and can only spend the caller IP's fixed allowance.
 - Authenticated only: `delete_public_metrics`, `delete_staff_activity_logs`, `record_staff_activity`, `staff_list_directory_headings`, `staff_list_directory_records`, `staff_save_directory_record`, `staff_update_design_namespace`, and `staff_update_site_settings`.
 - The function grants already match those role groups. The separate function-body review is in `docs/SECURITY-REVIEW-2026-10-12.md`.
 
