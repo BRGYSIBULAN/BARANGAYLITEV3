@@ -20,7 +20,7 @@ The public navigation is organized as Home, News & Updates, Services, About, Dir
 
 Public verification is at `verify.html`. Manual lookup requires ID number plus last name, as in the original website. QR codes use the existing record token and the permanent GitHub Pages address. Public analytics stores only approved aggregate counters, never visitor identity, search text, ID numbers, last names, or QR tokens. Billing, quota, bandwidth and database disk size are explicitly unavailable until a separately authorized provider integration exists.
 
-Writes run only after an explicit staff action. The application/activation screens reuse existing eligibility and role guards. All CSS remains in the central design system. Pinned local QR assets can be refreshed with `npm run vendor`; no external QR generation service receives ID tokens. See [Design Studio documentation](docs/DESIGN-STUDIO.md) and [debugging map](docs/DEBUGGING.md).
+Writes run only after an explicit staff action. The application/activation screens reuse existing eligibility and role guards. All CSS remains in the central design system. Pinned local QR assets can be refreshed with `npm run vendor`; no external QR generation service receives ID tokens. See [continuation notes](docs/CONTINUATION.md), the [2026-10-12 Supabase security review](docs/SECURITY-REVIEW-2026-10-12.md), the [Data API grants audit](docs/DATA-API-GRANTS-AUDIT-2026-10-12.md), [Design Studio documentation](docs/DESIGN-STUDIO.md), and the [debugging map](docs/DEBUGGING.md).
 
 ## Existing system preserved
 
@@ -73,6 +73,14 @@ The local server prints its exact URL. The live verifier needs network access an
 ```sh
 npm run verify:live
 ```
+
+To confirm that GitHub Pages is serving the exact HTML, CSS, JavaScript, vendor, and image files from the selected local commit:
+
+```sh
+npm run verify:deployment
+```
+
+The deployment verifier makes public GET requests only. It does not push, deploy, authenticate, or change Supabase data.
 
 Never put a Supabase secret/service-role key in this frontend. The configured publishable key is intentionally public; the existing database policies and Edge Function authorization enforce access.
 

@@ -132,6 +132,14 @@ npm run verify:live
 
 This check is read-only. It does not verify real password login, authenticated writes, uploads, or approval actions; those need separate end-to-end verification.
 
+To compare every deployed application file against the selected local Git commit:
+
+```sh
+npm run verify:deployment
+```
+
+This deployment check is also read-only. If it reports a mismatch, inspect the named path and confirm GitHub Pages finished publishing before changing code or redeploying.
+
 The live verifier explicitly requests unpublished content and checks anonymous reads of ID history, delegated permissions, and staff audit tables. An empty response confirms that the request exposed no rows; it does not prove every policy path is safe, especially when a table has no matching records. Keep authenticated role tests and backup/restore verification in the release checklist.
 
 ## Important debugging rules
