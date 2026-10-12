@@ -152,6 +152,9 @@ small,.muted { color:var(--muted); }
 .photo-viewer button:disabled { opacity:.35; }
 .photo-viewer-stage { display:grid; place-items:center; min-height:0; padding:clamp(.75rem,3vw,2rem); overflow:hidden; touch-action:pan-y; }
 .photo-viewer-image { display:block; width:auto; height:auto; max-width:100%; max-height:100%; object-fit:contain; border-radius:8px; }
+/* Personnel source photos can be wide close-ups. Cap only their displayed width
+   so the complete photo stays centered and comfortably sized on large screens. */
+.photo-viewer[data-photo-group="personnel"] .photo-viewer-image { max-width:min(100%,720px); }
 .photo-viewer-controls { display:grid; grid-template-columns:1fr minmax(120px,2fr) 1fr; border-top:1px solid #ffffff1f; }
 .photo-viewer-next { justify-self:end; }
 .photo-viewer-details { min-width:0; text-align:center; }

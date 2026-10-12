@@ -76,6 +76,9 @@ export function installPhotoViewer(root) {
   };
   const open = source => {
     activeGroup = source.dataset.photoGroup || '';
+    // Expose only the active presentation group so CSS can size personnel
+    // portraits independently without changing Gallery photos or stored data.
+    dialog.dataset.photoGroup = activeGroup;
     const items = photos();
     const selected = items.indexOf(source);
     if (selected < 0) return;

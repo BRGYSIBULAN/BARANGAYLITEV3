@@ -215,6 +215,7 @@ test('uploaded personnel photos open in an accessible previous and next viewer',
     photos[0].click();
     const dialog = document.querySelector('.photo-viewer');
     assert.ok(dialog.hasAttribute('open'));
+    assert.equal(dialog.dataset.photoGroup, 'personnel');
     assert.equal(dialog.querySelector('.photo-viewer-image').getAttribute('src'), 'https://example.com/first.webp');
     assert.equal(dialog.querySelector('.photo-viewer-count').textContent, '1 of 2');
     dialog.querySelector('.photo-viewer-next').click();
@@ -240,6 +241,7 @@ test('Community Gallery photos use the same viewer without mixing photo groups',
     assert.equal(galleryPhotos.length, 2);
     galleryPhotos[0].click();
     const dialog = document.querySelector('.photo-viewer');
+    assert.equal(dialog.dataset.photoGroup, 'gallery_items');
     assert.equal(dialog.querySelector('.photo-viewer-count').textContent, '1 of 2');
     dialog.querySelector('.photo-viewer-next').click();
     assert.equal(dialog.querySelector('.photo-viewer-image').getAttribute('src'), 'https://example.com/event.webp');

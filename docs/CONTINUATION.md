@@ -68,7 +68,8 @@ The package does not contain a native `supabase db dump`. That optional addition
 - The former local commit was confirmed as a direct ancestor of live `main`; no divergent code history or reset was involved.
 - `origin/main`, local `main`, and the verified live backup mirror now identify the same commit.
 - The private backup still preserves both the earlier local state and the live GitHub state.
-- The current uncommitted work contains documentation plus the read-only deployment verifier (`scripts/verify-deployment.mjs` and its package command). Review this exact diff before any future commit or deployment.
+- Local commit `577fe26` records the already deployed anonymous-grant hardening and its verification files; it has not yet been pushed to GitHub at the time of this note.
+- The personnel photo viewer now exposes its active photo group for presentation only. Personnel images are capped to a comfortable desktop width without changing the uploaded photo, Gallery sizing, navigation, or Supabase data.
 
 ## Current security follow-up
 
