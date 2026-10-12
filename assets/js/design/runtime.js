@@ -3,8 +3,8 @@
  * Depends on: model.js and one central assets/css/design-system.css stylesheet.
  * Debug: inspect the html data-theme attributes; only validated CSS variables are written.
  */
-import { normalizeDesign, contrastText, FONTS } from './model.js';
-import { designReady, designFailed } from './boot.js';
+import { normalizeDesign, contrastText, FONTS } from './model.js?v=96b812c63105';
+import { designReady, designFailed } from './boot.js?v=96b812c63105';
 
 /** No stylesheet injection: every page uses the same tokens and layout selectors. */
 export function applyDesign(value, root = document.documentElement) {

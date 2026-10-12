@@ -3,9 +3,9 @@
  * Depends on: directory RPC service, existing gallery-media uploads, shared dialogs, and image optimization.
  * Debug: verify the list view/section, then the saved subcategory and explicit public switch.
  */
-import { DIRECTORY_SECTIONS, DIRECTORY_SUBCATEGORIES } from '../data/contracts.js';
-import { element as el } from '../core/dom.js';
-import { badge, button, confirmationDialog, detailsDialog, editorDialog, heading, recordTable } from './ui.js';
+import { DIRECTORY_SECTIONS, DIRECTORY_SUBCATEGORIES } from '../data/contracts.js?v=96b812c63105';
+import { element as el } from '../core/dom.js?v=96b812c63105';
+import { badge, button, confirmationDialog, detailsDialog, editorDialog, heading, recordTable } from './ui.js?v=96b812c63105';
 
 const SCREENS = Object.freeze({
   officials: Object.freeze({ section: 'officials', label: 'Barangay Officials' }),
@@ -108,7 +108,7 @@ export function mountDirectory(root, route, services, isCurrent) {
     let photoUrl = values.directory_photo_url;
     let uploaded;
     if (file) {
-      const { optimizeImage } = await import('../media/images.js');
+      const { optimizeImage } = await import('../media/images.js?v=96b812c63105');
       uploaded = await services.storage.upload('gallery-media', await optimizeImage(file));
       photoUrl = uploaded.url;
     }

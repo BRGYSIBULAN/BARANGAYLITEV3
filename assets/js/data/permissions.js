@@ -3,7 +3,7 @@
  * Depends on: staff_delegated_permissions RLS and the verified profiles role.
  * Debug: confirm the target user, permission key, expiry, then the table's RLS policy.
  */
-import { unwrap } from '../core/client.js';
+import { unwrap } from '../core/client.js?v=96b812c63105';
 
 export const DELEGATED_MODULES = Object.freeze([
   { key: 'verification', route: 'verification', label: 'ID records & QR', description: 'Create, edit, delete, and download barangay ID records.' },

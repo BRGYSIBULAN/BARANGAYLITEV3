@@ -3,11 +3,11 @@
  * Depends on: data/applications.js, verified editor role, and design/access-renderer.js.
  * Debug: no writes until explicit submission; activation requires an approved editor session.
  */
-import { getServices } from './core/services.js';
-import { accessSurface } from './design/access-renderer.js';
-import { brand } from './design/public-renderer.js';
-import { watchDesign } from './design/runtime.js';
-import { designFailed } from './design/boot.js';
+import { getServices } from './core/services.js?v=96b812c63105';
+import { accessSurface } from './design/access-renderer.js?v=96b812c63105';
+import { brand } from './design/public-renderer.js?v=96b812c63105';
+import { watchDesign } from './design/runtime.js?v=96b812c63105';
+import { designFailed } from './design/boot.js?v=96b812c63105';
 async function start() {
   const mode = document.body.dataset.access;
   document.querySelector('#access-root').replaceChildren(accessSurface(mode));

@@ -3,7 +3,7 @@
  * Depends on: real record fields and the configured production website; no DOM or database.
  * Debug: UTC mirrors the existing database current_date; the printed expiry date is inclusive.
  */
-import { extractQrToken } from './verification.js';
+import { extractQrToken } from './verification.js?v=96b812c63105';
 export const PUBLIC_SITE = 'https://brgysibulan.github.io/BARANGAYLITEV3/';
 export function verificationDate(now = new Date()) { return now.toISOString().slice(0, 10); }
 export function idStatus(record, today = verificationDate()) {

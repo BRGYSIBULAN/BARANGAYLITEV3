@@ -3,11 +3,11 @@
  * Depends on: existing data/storage services, shared form components, and lazy QR/image tools.
  * Debug: errors stay beside the operation; page generations prevent stale request repainting.
  */
-import { CONTENT, VERIFICATION_FIELDS, DIRECTORY_CATEGORY_OPTIONS } from '../data/contracts.js';
-import { element as el } from '../core/dom.js';
-import { button, heading, badge, recordTable, editorDialog, confirmationDialog, detailsDialog, dateText } from './ui.js';
-import { fullName, idStatus } from '../data/id-model.js';
-import { showIdHistory } from './id-history.js';
+import { CONTENT, VERIFICATION_FIELDS, DIRECTORY_CATEGORY_OPTIONS } from '../data/contracts.js?v=96b812c63105';
+import { element as el } from '../core/dom.js?v=96b812c63105';
+import { button, heading, badge, recordTable, editorDialog, confirmationDialog, detailsDialog, dateText } from './ui.js?v=96b812c63105';
+import { fullName, idStatus } from '../data/id-model.js?v=96b812c63105';
+import { showIdHistory } from './id-history.js?v=96b812c63105';
 
 /** Resolve ordinary content routes; personnel Directory routes use directory-screen.js. */
 export function contentScreen(route) {
@@ -86,7 +86,7 @@ export function mountContent(root, route, services, isCurrent, { canViewHistory 
           }
           else {
             let prepared = file;
-            if (file && def.bucket === 'gallery-media') { const { optimizeImage } = await import('../media/images.js'); prepared = await optimizeImage(file); }
+            if (file && def.bucket === 'gallery-media') { const { optimizeImage } = await import('../media/images.js?v=96b812c63105'); prepared = await optimizeImage(file); }
             saved = prepared ? await services.storage.saveWithUpload(table, payload, row.id ?? null, prepared) : await services.content.save(table, payload, row.id ?? null);
           }
           writePerformed = true;
@@ -189,7 +189,7 @@ export function mountContent(root, route, services, isCurrent, { canViewHistory 
     const result = [button('View', () => openDetails(row)), button('Edit', () => openEditor(row))];
     // The shell hides this from delegated editors; service and database enforce admin access too.
     if (verification && canViewHistory) result.push(button('History', () => { dialog = showIdHistory(row, service, active); }));
-    if (verification) result.push(button('QR / Download', async () => { try { const { showQr } = await import('./qr.js'); if (active()) dialog = await showQr(row, { isCurrent: active }); } catch (error) { if (active()) message.textContent = error.message; } }));
+    if (verification) result.push(button('QR / Download', async () => { try { const { showQr } = await import('./qr.js?v=96b812c63105'); if (active()) dialog = await showQr(row, { isCurrent: active }); } catch (error) { if (active()) message.textContent = error.message; } }));
     result.push(button('Delete', event => remove(row, event.currentTarget))); return result;
   }
   async function load(target) {

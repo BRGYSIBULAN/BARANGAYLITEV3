@@ -3,7 +3,7 @@
  * Depends on: the existing covers service, validated slides, native timers and shared CSS.
  * Debug: pause/hidden/reduced-motion prevent movement; focus/poll reads refresh dashboard changes.
  */
-import { element as el } from '../core/dom.js';
+import { element as el } from '../core/dom.js?v=96b812c63105';
 export const CAROUSEL_INTERVAL_MS = 5000;
 export function createCarousel(slides, { autoplay = true, intervalMs = CAROUSEL_INTERVAL_MS } = {}) {
   const root = el('section', '', { class: 'cover-slideshow', 'aria-label': 'Barangay cover photos', 'aria-roledescription': 'carousel' });

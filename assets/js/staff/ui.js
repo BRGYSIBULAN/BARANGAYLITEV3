@@ -3,7 +3,7 @@
  * Depends on: native HTML controls and core/dom; no database or framework dependency.
  * Debug: submit errors remain in the dialog; busy/dirty guards protect unfinished edits.
  */
-import { element as el } from '../core/dom.js';
+import { element as el } from '../core/dom.js?v=96b812c63105';
 
 /** Human-readable labels are shared by tables and forms. */
 export function labelFor(key) {

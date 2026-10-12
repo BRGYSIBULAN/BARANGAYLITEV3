@@ -3,12 +3,12 @@
  * Depends on: login.html field IDs and core/auth.js through the service container.
  * Debug: form errors appear in #status; incorrect redirects require checking the live role.
  */
-import { getServices } from './core/services.js';
-import { accessSurface, applyAccessCover } from './design/access-renderer.js';
-import { watchDesign } from './design/runtime.js';
-import { designFailed } from './design/boot.js';
-import { brand } from './design/public-renderer.js';
-import { staffDestination } from './core/navigation.js';
+import { getServices } from './core/services.js?v=96b812c63105';
+import { accessSurface, applyAccessCover } from './design/access-renderer.js?v=96b812c63105';
+import { watchDesign } from './design/runtime.js?v=96b812c63105';
+import { designFailed } from './design/boot.js?v=96b812c63105';
+import { brand } from './design/public-renderer.js?v=96b812c63105';
+import { staffDestination } from './core/navigation.js?v=96b812c63105';
 
 // Waiting for DOMContentLoaded also waits for the deferred SDK script.
 function start() {

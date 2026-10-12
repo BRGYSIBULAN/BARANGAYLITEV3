@@ -3,8 +3,8 @@
  * Depends on: contracts.js, a Supabase client, and verified staff authorization.
  * Debug: inspect the chosen table/fields, publish flag, pagination, and RLS error.
  */
-import { unwrap } from '../core/client.js';
-import { contentContract, pickFields, validatePayload } from './contracts.js';
+import { unwrap } from '../core/client.js?v=96b812c63105';
+import { contentContract, pickFields, validatePayload } from './contracts.js?v=96b812c63105';
 
 export function createContent(client, auth) {
   /** Staff sees authorized content; publicOnly always excludes unpublished records. */
@@ -61,7 +61,7 @@ export function createContent(client, auth) {
   /** Fetch counts without downloading records; a failed count stays null, not zero. */
   async function counts({ publicOnly = false } = {}) {
     if (!publicOnly) await auth.requireStaff();
-    const { CONTENT } = await import('./contracts.js');
+    const { CONTENT } = await import('./contracts.js?v=96b812c63105');
     return Promise.all(Object.entries(CONTENT).map(async ([table, def]) => {
       let query = client.from(table).select('id', { count: 'exact', head: true });
       if (publicOnly) query = query.eq(def.flag, true);
@@ -73,7 +73,7 @@ export function createContent(client, auth) {
   /** Read only small aggregates and recent titles; never download all content for a chart. */
   async function overview() {
     await auth.requireStaff();
-    const { CONTENT } = await import('./contracts.js');
+    const { CONTENT } = await import('./contracts.js?v=96b812c63105');
     return Promise.all(Object.entries(CONTENT).map(async ([table, def]) => {
       const [total, published, recent] = await Promise.all([
         client.from(table).select('id', { count: 'exact', head: true }),

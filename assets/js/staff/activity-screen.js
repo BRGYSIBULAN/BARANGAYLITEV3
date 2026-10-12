@@ -3,9 +3,9 @@
  * Depends on: activity data service, native controls, and privacy-safe aggregated public metrics.
  * Debug: verify the selected scope/period, RLS visibility, and delete RPC audit trail.
  */
-import { element as el } from '../core/dom.js';
-import { ACTIVITY_PERIODS } from '../data/activity.js';
-import { heading, button, metric, barChart, recordTable, confirmationDialog, badge } from './ui.js';
+import { element as el } from '../core/dom.js?v=96b812c63105';
+import { ACTIVITY_PERIODS } from '../data/activity.js?v=96b812c63105';
+import { heading, button, metric, barChart, recordTable, confirmationDialog, badge } from './ui.js?v=96b812c63105';
 
 const SCOPES = Object.freeze([
   { key: 'public_analytics', label: 'Public View', description: 'Anonymous page, download, and verification-result counters. No visitor names or device identifiers are stored.' },

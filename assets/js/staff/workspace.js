@@ -3,22 +3,22 @@
  * Depends on: existing Auth/RLS services, route modules and the shared central stylesheet.
  * Debug: access is rechecked on every route/write; stale views are disposed before navigation.
  */
-import { getServices } from '../core/services.js';
-import { getClient } from '../core/client.js';
-import { CONTENT } from '../data/contracts.js';
-import { element as el } from '../core/dom.js';
-import { startRouter } from '../core/router.js';
-import { applyDesign, watchDesign } from '../design/runtime.js';
-import { designFailed } from '../design/boot.js';
-import { mountStudio } from '../design/studio.js';
-import { mountContent } from './content-screen.js';
-import { mountDashboard, mountUsage } from './dashboard.js';
-import { mountSettings, mountCovers } from './settings-screen.js';
-import { mountAccounts } from './accounts-screen.js';
-import { mountVisibility } from './visibility-screen.js';
-import { mountActivity } from './activity-screen.js';
-import { DELEGATED_MODULES } from '../data/permissions.js';
-import { DIRECTORY_ROUTE_KEYS, mountDirectory } from './directory-screen.js';
+import { getServices } from '../core/services.js?v=96b812c63105';
+import { getClient } from '../core/client.js?v=96b812c63105';
+import { CONTENT } from '../data/contracts.js?v=96b812c63105';
+import { element as el } from '../core/dom.js?v=96b812c63105';
+import { startRouter } from '../core/router.js?v=96b812c63105';
+import { applyDesign, watchDesign } from '../design/runtime.js?v=96b812c63105';
+import { designFailed } from '../design/boot.js?v=96b812c63105';
+import { mountStudio } from '../design/studio.js?v=96b812c63105';
+import { mountContent } from './content-screen.js?v=96b812c63105';
+import { mountDashboard, mountUsage } from './dashboard.js?v=96b812c63105';
+import { mountSettings, mountCovers } from './settings-screen.js?v=96b812c63105';
+import { mountAccounts } from './accounts-screen.js?v=96b812c63105';
+import { mountVisibility } from './visibility-screen.js?v=96b812c63105';
+import { mountActivity } from './activity-screen.js?v=96b812c63105';
+import { DELEGATED_MODULES } from '../data/permissions.js?v=96b812c63105';
+import { DIRECTORY_ROUTE_KEYS, mountDirectory } from './directory-screen.js?v=96b812c63105';
 
 /** Staff navigation groups one database-backed Directory into three focused managers. */
 export const STAFF_CONTENT_ROUTES = Object.freeze([

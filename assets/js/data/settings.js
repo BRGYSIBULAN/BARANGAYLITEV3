@@ -3,8 +3,8 @@
  * Depends on: site_settings(id=1), pages(slug), field contracts, and staff guards.
  * Debug: distinguish a settings-row error from a pages-slug or role/RLS error.
  */
-import { unwrap } from '../core/client.js';
-import { SETTINGS_FIELDS, SETTINGS_SELECT, PROFILE_SECTIONS, pickFields, validatePayload } from './contracts.js';
+import { unwrap } from '../core/client.js?v=96b812c63105';
+import { SETTINGS_FIELDS, SETTINGS_SELECT, PROFILE_SECTIONS, pickFields, validatePayload } from './contracts.js?v=96b812c63105';
 
 export function createSettings(client, auth) {
   /** Read public identity/contact/maintenance information, excluding legacy design data. */

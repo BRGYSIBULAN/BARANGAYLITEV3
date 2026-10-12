@@ -3,9 +3,9 @@
  * Depends on: local pinned QR generator, Canvas and the permanent verification URL model.
  * Debug: the generated QR encodes only the HTTPS URL/token; no data goes to external QR services.
  */
-import { element as el } from '../core/dom.js';
-import { verificationUrl } from '../data/id-model.js';
-import { button } from './ui.js';
+import { element as el } from '../core/dom.js?v=96b812c63105';
+import { verificationUrl } from '../data/id-model.js?v=96b812c63105';
+import { button } from './ui.js?v=96b812c63105';
 let generator;
 /** Load the non-module vendor once, only when staff opens a QR preview. */
 function loadGenerator() {

@@ -3,8 +3,8 @@
  * Depends on: model.js, preview.html, and an optional authenticated design service.
  * Debug: draft stays in memory; section Save or confirmed Publish uses the existing protected service.
  */
-import { element as el } from '../core/dom.js';
-import { PRESETS, presetDesign, normalizeDesign, sameDesign } from './model.js';
+import { element as el } from '../core/dom.js?v=96b812c63105';
+import { PRESETS, presetDesign, normalizeDesign, sameDesign } from './model.js?v=96b812c63105';
 
 /** One editor powers the safe public demo and the protected publishing workspace. */
 export function mountStudio(root, { snapshot = { config: presetDesign() }, service = null, previewUrl = 'preview.html', previewCovers = [], onPublished = () => {} } = {}) {

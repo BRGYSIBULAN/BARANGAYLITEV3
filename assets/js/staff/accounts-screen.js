@@ -3,10 +3,10 @@
  * Depends on: manage-editors service and server-side authorization; no Auth admin keys.
  * Debug: function errors appear in the screen; System Admin accounts are never offered as targets.
  */
-import { element as el } from '../core/dom.js';
-import { heading, button, badge, recordTable, dateText } from './ui.js';
-import { PUBLIC_SITE } from '../data/id-model.js';
-import { DELEGATED_MODULES, permissionEnabled } from '../data/permissions.js';
+import { element as el } from '../core/dom.js?v=96b812c63105';
+import { heading, button, badge, recordTable, dateText } from './ui.js?v=96b812c63105';
+import { PUBLIC_SITE } from '../data/id-model.js?v=96b812c63105';
+import { DELEGATED_MODULES, permissionEnabled } from '../data/permissions.js?v=96b812c63105';
 
 export function mountAccounts(root, services, isCurrent) {
   let disposed = false, dialog = null, busy = false;

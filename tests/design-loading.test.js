@@ -37,7 +37,7 @@ test('every live/iframe shell gates its first paint before loading application s
     assert.ok(doc.querySelector('.design-loader [data-design-message]'), file);
     assert.ok(doc.querySelector('.design-loader [data-design-retry]'), file);
     assert.ok(doc.querySelector('.design-loader noscript'), file);
-    assert.ok(doc.head.querySelector('script[src$="/design/boot.js"]'), file);
+    assert.ok(doc.head.querySelector('script[src*="/design/boot.js?v="]'), file);
     assert.ok(html.indexOf('/design/boot.js') < html.lastIndexOf('<script'), file);
   }
   const demo = await readFile(new URL('../design-studio.html', import.meta.url), 'utf8');

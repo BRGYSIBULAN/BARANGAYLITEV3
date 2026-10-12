@@ -3,8 +3,8 @@
  * Depends on: the two existing verification RPCs and verification_records table.
  * Debug: public lookup errors belong to RPCs; admin list/save errors need role/RLS checks.
  */
-import { unwrap } from '../core/client.js';
-import { VERIFICATION_FIELDS, pickFields } from './contracts.js';
+import { unwrap } from '../core/client.js?v=96b812c63105';
+import { VERIFICATION_FIELDS, pickFields } from './contracts.js?v=96b812c63105';
 
 /** Accept an existing UUID token or printed legacy QR URL, not arbitrary query text. */
 export function extractQrToken(value) {
@@ -52,7 +52,7 @@ export function createVerification(client, auth) {
     // Reuse the same inclusive UTC expiry rules as ID badges and the existing dashboard.
     // These predicates run before pagination, so matches are found across all records.
     if (validity !== 'all') {
-      const { verificationDate } = await import('./id-model.js');
+      const { verificationDate } = await import('./id-model.js?v=96b812c63105');
       const today = verificationDate();
       if (validity === 'expired') query = query.or(`status.eq.EXPIRED,and(status.eq.ACTIVE,expiration_date.lt.${today})`);
       else {
@@ -119,7 +119,7 @@ export function createVerification(client, auth) {
   /** Aggregate only status/dates; no resident names are downloaded for dashboard analysis. */
   async function overview() {
     await auth.requirePermission('verification');
-    const { verificationDate } = await import('./id-model.js');
+    const { verificationDate } = await import('./id-model.js?v=96b812c63105');
     const today = verificationDate();
     const soon = new Date(today + 'T00:00:00Z'); soon.setUTCDate(soon.getUTCDate() + 30);
     const count = async transform => {

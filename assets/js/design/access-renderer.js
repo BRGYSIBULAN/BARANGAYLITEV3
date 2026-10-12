@@ -3,8 +3,8 @@
  * Depends on: public-renderer brand, DOM helpers, and the central CSS; no auth operations.
  * Debug: preview forms are disabled; live entry modules attach the existing service handlers.
  */
-import { element as el } from '../core/dom.js';
-import { brand } from './public-renderer.js';
+import { element as el } from '../core/dom.js?v=96b812c63105';
+import { brand } from './public-renderer.js?v=96b812c63105';
 export const ACCESS = Object.freeze({
   login: { title: 'Welcome.', subtitle: 'Sign in with your existing barangay staff account.', button: 'Sign in', fields: [['email', 'Email address', 'email'], ['password', 'Password', 'password']] },
   signup: { title: 'Serve your community.', subtitle: 'Apply for Content Admin access. System Admin approval is required.', button: 'Submit application', fields: [['displayName', 'Full name (as registered)', 'text'], ['email', 'Email address', 'email'], ['position', 'Role / position (optional)', 'text'], ['reason', 'Reason for applying (optional)', 'text'], ['password', 'Password (at least 8 characters)', 'password'], ['confirmation', 'Confirm password', 'password']] },

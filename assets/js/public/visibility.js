@@ -3,9 +3,9 @@
  * Depends on: data/visibility.js snapshots, focus/visibility events, and safe DOM helpers.
  * Debug: a failed refresh returns null so disabled public services are never guessed as enabled.
  */
-import { element as el } from '../core/dom.js';
-import { brand } from '../design/public-renderer.js';
-import { normalizeVisibility } from '../data/visibility.js';
+import { element as el } from '../core/dom.js?v=96b812c63105';
+import { brand } from '../design/public-renderer.js?v=96b812c63105';
+import { normalizeVisibility } from '../data/visibility.js?v=96b812c63105';
 
 /** Read only the settings JSON; hidden tabs skip background polling after the initial check. */
 export function watchVisibility(service, onChange, { intervalMs = 60000 } = {}) {

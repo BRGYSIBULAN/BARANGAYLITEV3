@@ -36,8 +36,8 @@ Use this file as the starting point for the next work session. Re-check live sta
 - Storage buckets: `branding-media`, `disclosure-documents`, `forms`, and `gallery-media`.
 - Deployed Edge Functions: `manage-editors` v7, closed `bootstrap-admin` v2, and `system-health` v2.
 - Migration history recorded through `20261012091925_restrict_anonymous_table_writes` (21 migrations after the security deployment).
-- Backup-stage verification on 2026-10-12 passed 82 tests and checked 82 files. After fast-forwarding to live `main`, adding the continuation documentation, and deploying the anonymous-grant hardening, the expanded suite passes 136 tests and checks 108 files.
-- The read-only deployment verifier confirms that all 70 deployed HTML and `assets/` files match live Git commit `ba5c259` byte-for-byte.
+- Backup-stage verification on 2026-10-12 passed 82 tests and checked 82 files. After the security, photo-viewer, and automatic cache-version work, the expanded suite passes 138 tests and checks 110 files.
+- `npm run verify:deployment` is the authoritative read-only deployment check. It compares all 70 deployed HTML and `assets/` files with the current live Git commit byte-for-byte.
 - The read-only live verifier passes the existing Supabase column contracts, published-content boundaries, private-table denials, public Directory output, staff Directory denial, and pinned SDK availability. No live write was performed.
 
 ## Recovery backup
@@ -63,13 +63,12 @@ The package does not contain a native `supabase db dump`. That optional addition
 
 ## Current Git state
 
-- Live GitHub `main`: `ba5c259156941d4af65808969f17a6cd8789700c`.
-- Local `main` was safely fast-forwarded by 40 commits from `1774547` to the same live commit on 2026-10-12.
-- The former local commit was confirmed as a direct ancestor of live `main`; no divergent code history or reset was involved.
-- `origin/main`, local `main`, and the verified live backup mirror now identify the same commit.
+- The 2026-10-12 reconciliation safely fast-forwarded local `main` by 40 commits from `1774547` to the then-live `ba5c259`; no divergent history or reset was involved.
+- Security hardening and the corrected personnel photo viewer were subsequently deployed to GitHub Pages. Re-run `git fetch origin` and `npm run verify:deployment` instead of relying on a copied commit hash.
 - The private backup still preserves both the earlier local state and the live GitHub state.
-- Local commit `577fe26` records the already deployed anonymous-grant hardening and its verification files; it has not yet been pushed to GitHub at the time of this note.
+- Commit `577fe26` records the deployed anonymous-grant hardening and its verification files.
 - The personnel photo viewer now exposes its active photo group for presentation only. Personnel images are capped to a comfortable desktop width without changing the uploaded photo, Gallery sizing, navigation, or Supabase data.
+- Browser CSS, entry modules, nested modules, and dynamic imports share a content-derived 12-character release token. Run `npm run version:assets` after asset changes; `npm run check` fails closed if any token is stale or missing.
 
 ## Current security follow-up
 
@@ -98,8 +97,9 @@ The live, read-only grant inventory is now recorded in `docs/DATA-API-GRANTS-AUD
 6. **Plan-blocked:** leaked-password protection cannot be enabled on the current Free plan. Upgrade to Pro only after the owner explicitly approves the recurring cost; then enable and re-run Auth/login verification.
 7. **Completed:** audited current explicit Data API grants and documented the least-privilege target before the 2026-10-30 platform enforcement; no live grants were changed.
 8. **Completed and deployed:** `20261012091925_restrict_anonymous_table_writes.sql` removes anonymous writes from public read-only tables and removes all anonymous `profiles` access while preserving public reads and the separate application INSERT flow. Its contract test is `tests/anonymous-grants.test.js`. Live grant inspection and `npm run verify:live` passed after deployment.
-9. Run `npm test`, `npm run check`, `npm run verify:deployment`, Supabase advisors, and `npm run verify:live` after each relevant change.
-10. Test authenticated writes and uploads manually with the correct role before production deployment; automated tests intentionally do not make those live writes.
+9. **Completed:** automatic cache versioning covers the full local CSS/JavaScript module graph; `npm run check` prevents a release with stale asset tokens.
+10. Run `npm test`, `npm run check`, `npm run verify:deployment`, Supabase advisors, and `npm run verify:live` after each relevant change.
+11. Test authenticated writes and uploads manually with the correct role before production deployment; automated tests intentionally do not make those live writes.
 
 ## Where to continue debugging
 

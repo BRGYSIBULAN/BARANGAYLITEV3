@@ -3,8 +3,8 @@
  * Depends on: existing Storage listing/RLS and public GitHub REST metadata; no new backend.
  * Debug: partial failures are separate from provider outages; refresh is user-driven and cached.
  */
-import { unwrap } from '../core/client.js';
-import { BUCKETS } from './storage.js';
+import { unwrap } from '../core/client.js?v=96b812c63105';
+import { BUCKETS } from './storage.js?v=96b812c63105';
 export const GITHUB_REPO = 'Brgysibulan/BARANGAYLITEV3';
 export function formatBytes(value) {
   if (value == null || !Number.isFinite(Number(value)) || Number(value) < 0) return 'Not available';

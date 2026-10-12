@@ -3,9 +3,9 @@
  * Depends on: protected verification.history, shared controls, and the central stylesheet.
  * Debug: check access/query errors first; request generations discard responses after closing.
  */
-import { element as el } from '../core/dom.js';
-import { VERIFICATION_FIELDS } from '../data/contracts.js';
-import { button, labelFor } from './ui.js';
+import { element as el } from '../core/dom.js?v=96b812c63105';
+import { VERIFICATION_FIELDS } from '../data/contracts.js?v=96b812c63105';
+import { button, labelFor } from './ui.js?v=96b812c63105';
 
 /** Render only known ID fields as text, even if a history payload contains extra properties. */
 export function historyEntry(entry) {

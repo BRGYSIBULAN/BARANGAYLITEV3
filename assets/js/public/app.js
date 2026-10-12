@@ -3,19 +3,19 @@
  * Depends on: service container, shared design renderers/runtime, cover watcher, and hash router.
  * Debug: section failures are visible; cover refreshes read the existing dashboard record only.
  */
-import { getServices } from '../core/services.js';
-import { CONTENT, DIRECTORY_GROUPS } from '../data/contracts.js';
-import { element as el, safeLink } from '../core/dom.js';
-import { startRouter } from '../core/router.js';
-import { watchDesign } from '../design/runtime.js';
-import { beginDesignLoad, designFailed } from '../design/boot.js';
-import { presetDesign } from '../design/model.js';
-import { publicHome, publicHeader, publicFooter, contentCard, officialsRoster } from '../design/public-renderer.js';
-import { watchAvailability, maintenanceSurface } from './availability.js';
-import { watchCovers } from './carousel.js';
-import { installPhotoViewer } from './photo-viewer.js';
-import { defaultVisibility, hiddenDirectoryGroups, moduleVisible } from '../data/visibility.js';
-import { watchVisibility, unavailableSurface } from './visibility.js';
+import { getServices } from '../core/services.js?v=96b812c63105';
+import { CONTENT, DIRECTORY_GROUPS } from '../data/contracts.js?v=96b812c63105';
+import { element as el, safeLink } from '../core/dom.js?v=96b812c63105';
+import { startRouter } from '../core/router.js?v=96b812c63105';
+import { watchDesign } from '../design/runtime.js?v=96b812c63105';
+import { beginDesignLoad, designFailed } from '../design/boot.js?v=96b812c63105';
+import { presetDesign } from '../design/model.js?v=96b812c63105';
+import { publicHome, publicHeader, publicFooter, contentCard, officialsRoster } from '../design/public-renderer.js?v=96b812c63105';
+import { watchAvailability, maintenanceSurface } from './availability.js?v=96b812c63105';
+import { watchCovers } from './carousel.js?v=96b812c63105';
+import { installPhotoViewer } from './photo-viewer.js?v=96b812c63105';
+import { defaultVisibility, hiddenDirectoryGroups, moduleVisible } from '../data/visibility.js?v=96b812c63105';
+import { watchVisibility, unavailableSurface } from './visibility.js?v=96b812c63105';
 
 const PUBLIC_ROUTES = Object.freeze({
   announcements: { table: 'announcements', title: 'News & Updates' },
