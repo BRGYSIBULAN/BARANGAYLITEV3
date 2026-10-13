@@ -35,8 +35,8 @@ Use this file as the starting point for the next work session. Re-check live sta
 - Auth accounts: 3 total; current role model has 1 System Admin and 2 Content Admin users. Do not include their private details in documentation.
 - Storage buckets: `branding-media`, `disclosure-documents`, `forms`, and `gallery-media`.
 - Deployed Edge Functions: `manage-editors` v7, closed `bootstrap-admin` v2, and `system-health` v2.
-- Migration history recorded through `20261012114649_harden_rate_limit_fingerprint` (23 migrations after the rate-limit deployment).
-- Backup-stage verification on 2026-10-13 passed 143 tests and checked 114 files.
+- Migration history recorded through `20261013040827_opt_in_explicit_data_api_grants` (24 migrations).
+- Verification on 2026-10-13 passed 145 tests and checked 116 files.
 - `npm run verify:deployment` is the authoritative read-only deployment check. It compares all 70 deployed HTML and `assets/` files with the current live Git commit byte-for-byte.
 - The read-only live verifier passes the existing Supabase column contracts, published-content boundaries, private-table denials, public Directory output, staff Directory denial, and pinned SDK availability. No live write was performed.
 
@@ -87,7 +87,7 @@ The function review is recorded in `docs/SECURITY-REVIEW-2026-10-12.md`. No conf
 
 Supabase has announced that Data API table exposure will require explicit opt-in for all projects starting 2026-10-30. Before that date, inventory the grants required by the existing application and verify each public and authenticated request after any grant change. RLS and Data API grants are separate controls.
 
-The live, read-only grant inventory is now recorded in `docs/DATA-API-GRANTS-AUDIT-2026-10-12.md`. Required application grants exist today, but some anonymous and authenticated table privileges are broader than the current browser uses. RLS currently blocks unauthorized rows and operations. Narrowing grants is a planned defense-in-depth migration, not an emergency production edit.
+The live, read-only grant inventory is recorded in `docs/DATA-API-GRANTS-AUDIT-2026-10-12.md`. Required application grants exist today, but some authenticated table privileges are broader than the current browser uses. RLS currently blocks unauthorized rows and operations. Future `postgres`-owned public objects now use explicit opt-in grants; narrowing any remaining existing-object grant is still a separate planned change requiring authenticated regression testing.
 
 ## Recommended next sequence
 
@@ -103,6 +103,7 @@ The live, read-only grant inventory is now recorded in `docs/DATA-API-GRANTS-AUD
 10. **Completed:** server-side IP rate limiting protects manual/QR verification, Content Admin eligibility, and public analytics without replacing URLs, IDs, accounts, data, or QR tokens.
 11. Run `npm test`, `npm run check`, `npm run verify:deployment`, Supabase advisors, and `npm run verify:live` after each relevant change.
 12. Test authenticated writes and uploads manually with the correct role before production deployment; automated tests intentionally do not make those live writes.
+13. **Completed and deployed:** future `postgres`-owned public tables, functions, and sequences no longer inherit automatic Data API access. Existing objects and their current grants were unchanged, and the post-migration live verifier passed.
 
 ## Where to continue debugging
 

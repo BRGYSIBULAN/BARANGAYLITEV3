@@ -7,6 +7,7 @@ This began as a read-only inventory of the live `anon` and `authenticated` table
 - All 17 live public tables have RLS enabled.
 - The additional `private.public_rate_limits` table has RLS enabled and no browser/service table grants. Its lack of an RLS policy is an intentional deny-all boundary; only the constrained rate-limit helper accesses it as owner.
 - The tables and RPCs used by the current browser application already have explicit grants for their required Supabase roles.
+- Future tables, functions, and sequences created by the `postgres` owner now require reviewed explicit Data API grants. Existing-object grants were not changed by this default-privilege migration.
 - Existing RLS policies still decide which rows each caller may access. The live verifier confirms that anonymous callers cannot read the reviewed private tables or unpublished public content.
 - Several table grants are broader than the operations made by the current browser code. RLS blocks those operations today, but narrowing the grants would add defense in depth if a policy is changed incorrectly later.
 - This audit establishes the current application requirement; it does not guarantee rollout behavior. Re-run the public and authenticated checks after the Supabase platform enforcement takes effect or after any grant migration.
@@ -37,7 +38,7 @@ This began as a read-only inventory of the live `anon` and `authenticated` table
 2. Remove anonymous access to `profiles` at the grant layer, in addition to its current RLS denial.
 3. Keep anonymous `INSERT` only on `content_admin_applications`; confirm both email-confirmation modes before changing its authenticated grant.
 4. Reduce authenticated direct writes on `site_settings`, `profiles`, legacy `officials`, and `directory_entries` only after manual System Admin and Content Admin regression testing.
-5. Preserve required sequence privileges if any future table insert uses an identity/sequence-backed key.
+5. **Completed for future objects:** automatic sequence access was removed from the future `postgres` defaults. A future identity-backed insert migration must add the exact required table and sequence grants explicitly.
 6. Apply the final grant changes as one versioned migration with a rollback script. Test anonymous pages, application signup, both staff roles, all CRUD screens, verification, QR links, uploads, and Edge Function account management before production deployment.
 
 The current broad grants are not proof of public data exposure because RLS remains enabled and was tested. They are nevertheless a larger authorization surface than the current browser needs, so the proposed narrowing should be treated as a planned security improvement rather than an emergency live edit.
@@ -45,6 +46,8 @@ The current broad grants are not proof of public data exposure because RLS remai
 ## Local hardening draft
 
 The migration `supabase/migrations/20261012091925_restrict_anonymous_table_writes.sql` implements only the first, lowest-risk anonymous-grant reduction. It preserves public `SELECT`, the separate Content Admin application `INSERT`, all authenticated/service-role privileges, existing RLS policies, RPC grants, data, Auth, and Storage. It was applied to the live project on 2026-10-12; live grant inspection and the read-only application verifier passed afterward.
+
+The migration `supabase/migrations/20261013040827_opt_in_explicit_data_api_grants.sql` adopts Supabase's opt-in defaults for future public objects created by the `postgres` owner. It revokes automatic future table CRUD, function execution, and sequence use for Data API roles, plus automatic future function execution for `PUBLIC`. It does not revoke grants on any existing object. It was applied on 2026-10-13; the live migration inventory, default ACL inspection, advisors, and read-only application verifier passed afterward.
 
 ## Official reference
 
