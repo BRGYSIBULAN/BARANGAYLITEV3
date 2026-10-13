@@ -37,7 +37,7 @@ This began as a read-only inventory of the live `anon` and `authenticated` table
 1. Replace broad anonymous CRUD grants on public-content tables with the exact public `SELECT` grants.
 2. Remove anonymous access to `profiles` at the grant layer, in addition to its current RLS denial.
 3. Keep anonymous `INSERT` only on `content_admin_applications`; confirm both email-confirmation modes before changing its authenticated grant.
-4. Reduce authenticated direct writes on `site_settings`, `profiles`, legacy `officials`, and `directory_entries` only after manual System Admin and Content Admin regression testing.
+4. **Partially completed:** authenticated direct writes were removed from `site_settings` and `profiles` after source/RPC/Edge Function review. Retain the legacy `officials` and `directory_entries` grants until their older recovery paths receive manual System Admin and Content Admin regression testing.
 5. **Completed for future objects:** automatic sequence access was removed from the future `postgres` defaults. A future identity-backed insert migration must add the exact required table and sequence grants explicitly.
 6. Apply the final grant changes as one versioned migration with a rollback script. Test anonymous pages, application signup, both staff roles, all CRUD screens, verification, QR links, uploads, and Edge Function account management before production deployment.
 
@@ -48,6 +48,8 @@ The current broad grants are not proof of public data exposure because RLS remai
 The migration `supabase/migrations/20261012091925_restrict_anonymous_table_writes.sql` implements only the first, lowest-risk anonymous-grant reduction. It preserves public `SELECT`, the separate Content Admin application `INSERT`, all authenticated/service-role privileges, existing RLS policies, RPC grants, data, Auth, and Storage. It was applied to the live project on 2026-10-12; live grant inspection and the read-only application verifier passed afterward.
 
 The migration `supabase/migrations/20261013040827_opt_in_explicit_data_api_grants.sql` adopts Supabase's opt-in defaults for future public objects created by the `postgres` owner. It revokes automatic future table CRUD, function execution, and sequence use for Data API roles, plus automatic future function execution for `PUBLIC`. It does not revoke grants on any existing object. It was applied on 2026-10-13; the live migration inventory, default ACL inspection, advisors, and read-only application verifier passed afterward.
+
+The migration `supabase/migrations/20261013053709_restrict_authenticated_direct_settings_writes.sql` reduces authenticated access on `profiles` and `site_settings` to `SELECT`. Browser source review confirmed that profile writes use the service-role `manage-editors` Edge Function and all settings/design/cover/visibility writes use protected RPCs. It was applied on 2026-10-13; post-migration grant inspection, advisors, 147 local tests, and the read-only live verifier passed. No table row or existing RPC grant changed.
 
 ## Official reference
 
