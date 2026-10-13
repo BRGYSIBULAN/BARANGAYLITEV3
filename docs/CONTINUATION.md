@@ -1,6 +1,6 @@
 # BRGYWEBLITEV3 continuation notes
 
-Last verified: 2026-10-12 (Asia/Manila)
+Last verified: 2026-10-13 (Asia/Manila)
 
 Use this file as the starting point for the next work session. Re-check live state before making changes because the website is already deployed and in use.
 
@@ -36,7 +36,7 @@ Use this file as the starting point for the next work session. Re-check live sta
 - Storage buckets: `branding-media`, `disclosure-documents`, `forms`, and `gallery-media`.
 - Deployed Edge Functions: `manage-editors` v7, closed `bootstrap-admin` v2, and `system-health` v2.
 - Migration history recorded through `20261012114649_harden_rate_limit_fingerprint` (23 migrations after the rate-limit deployment).
-- Backup-stage verification on 2026-10-12 passed 82 tests and checked 82 files. After the security, photo-viewer, automatic cache-version, and public rate-limit work, the expanded suite passes 143 tests and checks 114 files.
+- Backup-stage verification on 2026-10-13 passed 143 tests and checked 114 files.
 - `npm run verify:deployment` is the authoritative read-only deployment check. It compares all 70 deployed HTML and `assets/` files with the current live Git commit byte-for-byte.
 - The read-only live verifier passes the existing Supabase column contracts, published-content boundaries, private-table denials, public Directory output, staff Directory denial, and pinned SDK availability. No live write was performed.
 
@@ -44,14 +44,14 @@ Use this file as the starting point for the next work session. Re-check live sta
 
 The verified private backup is outside the public Git repository:
 
-`../_private-backups/BRGYWEBLITEV3-backup-2026-10-12/`
+`../_private-backups/BRGYWEBLITEV3-backup-2026-10-13/`
 
 It contains:
 
 - the exact live GitHub mirror and live `main` ZIP;
 - the local Git bundle and local source ZIP;
 - schema, columns, constraints, indexes, RLS policies, grants, functions, triggers, views, extensions, and migrations;
-- 17 public-table data snapshots containing 288 rows at backup time;
+- 17 public-table data snapshots containing 304 rows at backup time;
 - selected Auth account/identity recovery records, excluding active session/token tables;
 - all 24 Storage objects (2,952,860 bytes at backup time);
 - all three deployed Edge Function sources and metadata;
@@ -65,7 +65,7 @@ The package does not contain a native `supabase db dump`. That optional addition
 
 - The 2026-10-12 reconciliation safely fast-forwarded local `main` by 40 commits from `1774547` to the then-live `ba5c259`; no divergent history or reset was involved.
 - Security hardening and the corrected personnel photo viewer were subsequently deployed to GitHub Pages. Re-run `git fetch origin` and `npm run verify:deployment` instead of relying on a copied commit hash.
-- The private backup still preserves both the earlier local state and the live GitHub state.
+- The earlier 2026-10-12 backup remains untouched. The refreshed 2026-10-13 backup preserves the current Git history, source, database inventory, recovery data, Storage objects, and Edge Functions.
 - Commit `577fe26` records the deployed anonymous-grant hardening and its verification files.
 - The personnel photo viewer now exposes its active photo group for presentation only. Personnel images are capped to a comfortable desktop width without changing the uploaded photo, Gallery sizing, navigation, or Supabase data.
 - Browser CSS, entry modules, nested modules, and dynamic imports share a content-derived 12-character release token. Run `npm run version:assets` after asset changes; `npm run check` fails closed if any token is stale or missing.
@@ -91,8 +91,8 @@ The live, read-only grant inventory is now recorded in `docs/DATA-API-GRANTS-AUD
 
 ## Recommended next sequence
 
-1. **Completed:** compare and reconcile live GitHub `ba5c259` with the former local `1774547` without overwriting either recovery copy.
-2. **Completed:** all 70 deployed HTML and `assets/` files matched Git commit `ba5c259` byte-for-byte using `npm run verify:deployment`.
+1. **Completed:** compare and reconcile the live GitHub branch with the former local recovery state without overwriting either recovery copy.
+2. **Completed on 2026-10-13:** all 70 deployed HTML and `assets/` files matched the current live Git commit byte-for-byte using `npm run verify:deployment`.
 3. Optionally create the native Supabase SQL dump through a secure local password prompt.
 4. **Completed:** reviewed the original three anonymous `SECURITY DEFINER` RPCs plus the constrained rate-limit helper against their intended public behavior and documented the residual risks.
 5. **Completed:** reviewed all twelve signed-in advisor warnings for internal role checks, allowlists, narrow output, grants, and callers.
@@ -112,5 +112,6 @@ The live, read-only grant inventory is now recorded in `docs/DATA-API-GRANTS-AUD
 - Design behavior and safe publishing: `docs/DESIGN-STUDIO.md`
 - Staff acceptance checks: `docs/STAFF-QA.md`
 - Original rewire boundaries: `docs/REWIRE-AUDIT.md`
-- Backup result and limitations: `../_private-backups/BRGYWEBLITEV3-backup-2026-10-12/SUMMARY.md`
+- Current backup result and limitations: `../_private-backups/BRGYWEBLITEV3-backup-2026-10-13/SUMMARY.md`
+- Earlier preserved backup: `../_private-backups/BRGYWEBLITEV3-backup-2026-10-12/`
 

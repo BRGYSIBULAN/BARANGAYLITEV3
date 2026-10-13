@@ -1,4 +1,14 @@
-# Staff feature verification — 2026-09-04
+# Staff feature verification
+
+## 2026-10-13 mobile and deployment pass
+
+The public homepage, Verify ID controls, officials photo viewer, Page Settings dialog, and Design Studio were inspected at a 390 × 844 mobile viewport. No horizontal overflow or browser-console errors were observed. The personnel photo viewer stayed within the viewport while preserving the original uploaded image, caption, and Previous/Next navigation.
+
+Page Settings remained editable, maintenance mode was visibly off, and preview worked. The Design Studio retained the published design after reload without showing a stale layout. The camera permission prompt and all production save operations were intentionally left untouched.
+
+The read-only live verifier passed the published-content boundaries, private-table denials, public Directory output, staff Directory denial, verification contracts, and pinned Supabase SDK check. The deployment verifier confirmed that all 70 public HTML and `assets/` files matched the live Git commit byte-for-byte. No live record, setting, file, account, permission, or deployment was changed during these checks.
+
+## 2026-09-04 staff feature pass
 
 The shared admin dashboard was visually inspected in Design Studio and its mobile frame measured 375px content width / 375px scroll width. Public verification loaded the existing barangay identity, original ID-number-plus-last-name form, camera-off default, and saved-QR input.
 
