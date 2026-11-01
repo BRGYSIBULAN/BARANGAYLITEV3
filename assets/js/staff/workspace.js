@@ -3,22 +3,22 @@
  * Depends on: existing Auth/RLS services, route modules and the shared central stylesheet.
  * Debug: access is rechecked on every route/write; stale views are disposed before navigation.
  */
-import { getServices } from '../core/services.js?v=a3648db587e2';
-import { getClient } from '../core/client.js?v=a3648db587e2';
-import { CONTENT } from '../data/contracts.js?v=a3648db587e2';
-import { element as el } from '../core/dom.js?v=a3648db587e2';
-import { startRouter } from '../core/router.js?v=a3648db587e2';
-import { applyDesign, watchDesign } from '../design/runtime.js?v=a3648db587e2';
-import { designFailed } from '../design/boot.js?v=a3648db587e2';
-import { mountStudio } from '../design/studio.js?v=a3648db587e2';
-import { mountContent } from './content-screen.js?v=a3648db587e2';
-import { mountDashboard, mountUsage } from './dashboard.js?v=a3648db587e2';
-import { mountSettings, mountCovers } from './settings-screen.js?v=a3648db587e2';
-import { mountAccounts } from './accounts-screen.js?v=a3648db587e2';
-import { mountVisibility } from './visibility-screen.js?v=a3648db587e2';
-import { mountActivity } from './activity-screen.js?v=a3648db587e2';
-import { DELEGATED_MODULES } from '../data/permissions.js?v=a3648db587e2';
-import { DIRECTORY_ROUTE_KEYS, mountDirectory } from './directory-screen.js?v=a3648db587e2';
+import { getServices } from '../core/services.js?v=74ce2e2fa5b2';
+import { getClient } from '../core/client.js?v=74ce2e2fa5b2';
+import { CONTENT } from '../data/contracts.js?v=74ce2e2fa5b2';
+import { element as el } from '../core/dom.js?v=74ce2e2fa5b2';
+import { startRouter } from '../core/router.js?v=74ce2e2fa5b2';
+import { applyDesign, watchDesign } from '../design/runtime.js?v=74ce2e2fa5b2';
+import { designFailed } from '../design/boot.js?v=74ce2e2fa5b2';
+import { mountStudio } from '../design/studio.js?v=74ce2e2fa5b2';
+import { mountContent } from './content-screen.js?v=74ce2e2fa5b2';
+import { mountDashboard, mountUsage } from './dashboard.js?v=74ce2e2fa5b2';
+import { mountSettings, mountCovers } from './settings-screen.js?v=74ce2e2fa5b2';
+import { mountAccounts } from './accounts-screen.js?v=74ce2e2fa5b2';
+import { mountVisibility } from './visibility-screen.js?v=74ce2e2fa5b2';
+import { mountActivity } from './activity-screen.js?v=74ce2e2fa5b2';
+import { DELEGATED_MODULES } from '../data/permissions.js?v=74ce2e2fa5b2';
+import { DIRECTORY_ROUTE_KEYS, mountDirectory } from './directory-screen.js?v=74ce2e2fa5b2';
 
 /** Staff navigation groups one database-backed Directory into three focused managers. */
 export const STAFF_CONTENT_ROUTES = Object.freeze([

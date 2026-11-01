@@ -3,9 +3,9 @@
  * Depends on: bucket MIME/size contracts, staff authorization, and content.save().
  * Debug: check bucket policy, file type/size, and retainedUpload on an uncertain save.
  */
-import { SUPABASE_URL } from '../core/config.js?v=a3648db587e2';
-import { unwrap } from '../core/client.js?v=a3648db587e2';
-import { contentContract } from './contracts.js?v=a3648db587e2';
+import { SUPABASE_URL } from '../core/config.js?v=74ce2e2fa5b2';
+import { unwrap } from '../core/client.js?v=74ce2e2fa5b2';
+import { contentContract } from './contracts.js?v=74ce2e2fa5b2';
 
 const documents = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
 export const BUCKETS = Object.freeze({

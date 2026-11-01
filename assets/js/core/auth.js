@@ -3,7 +3,7 @@
  * Depends on: Supabase Auth and public.profiles; never on a cached UI role.
  * Debug: check Auth first, then the matching profiles.user_id/role/is_active row.
  */
-import { unwrap } from './client.js?v=a3648db587e2';
+import { unwrap } from './client.js?v=74ce2e2fa5b2';
 
 // Profile rows, not editable user_metadata or local role caches, determine access.
 // These checks improve UX; the existing server-side RLS remains authoritative.
@@ -52,13 +52,13 @@ export function createAuth(client) {
   }
 
   /** Authenticate the existing user; this never creates accounts or resets passwords. */
-  async function signIn(email, password) {
+  async function signIn(email, password, roles = ['admin', 'editor']) {
     // Do not trim or otherwise change a user's existing password.
     unwrap(await client.auth.signInWithPassword({ email: email.trim(), password }));
     const staff = await currentStaff();
-    if (!staff) {
+    if (!staff || !roles.includes(staff.profile.role)) {
       unwrap(await client.auth.signOut({ scope: 'local' }));
-      throw new Error('This account does not have active staff access. Contact the System Admin.');
+      throw new Error('This account does not have the required staff access. Contact the System Admin.');
     }
     return staff;
   }

@@ -3,8 +3,8 @@
  * Depends on: config.js and the pinned browser SDK loaded by the HTML shell.
  * Debug: a missing SDK error means check the external script/network first.
  */
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, AUTH_STORAGE_KEY } from './config.js?v=a3648db587e2';
-import { browserStorage, createSessionStore } from './session-storage.js?v=a3648db587e2';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, AUTH_STORAGE_KEY } from './config.js?v=74ce2e2fa5b2';
+import { browserStorage, createSessionStore } from './session-storage.js?v=74ce2e2fa5b2';
 
 let singleton, sessionStore;
 /** Reuse the client so auth refresh and session listeners are not duplicated. */

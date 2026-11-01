@@ -3,19 +3,19 @@
  * Depends on: service container, shared design renderers/runtime, cover watcher, and hash router.
  * Debug: section failures are visible; cover refreshes read the existing dashboard record only.
  */
-import { getServices } from '../core/services.js?v=a3648db587e2';
-import { CONTENT, DIRECTORY_GROUPS } from '../data/contracts.js?v=a3648db587e2';
-import { element as el, safeLink } from '../core/dom.js?v=a3648db587e2';
-import { startRouter } from '../core/router.js?v=a3648db587e2';
-import { watchDesign } from '../design/runtime.js?v=a3648db587e2';
-import { beginDesignLoad, designFailed } from '../design/boot.js?v=a3648db587e2';
-import { presetDesign } from '../design/model.js?v=a3648db587e2';
-import { publicHome, publicHeader, publicFooter, contentCard, officialsRoster } from '../design/public-renderer.js?v=a3648db587e2';
-import { watchAvailability, maintenanceSurface } from './availability.js?v=a3648db587e2';
-import { watchCovers } from './carousel.js?v=a3648db587e2';
-import { installPhotoViewer } from './photo-viewer.js?v=a3648db587e2';
-import { defaultVisibility, hiddenDirectoryGroups, moduleVisible } from '../data/visibility.js?v=a3648db587e2';
-import { watchVisibility, unavailableSurface } from './visibility.js?v=a3648db587e2';
+import { getServices } from '../core/services.js?v=74ce2e2fa5b2';
+import { CONTENT, DIRECTORY_GROUPS } from '../data/contracts.js?v=74ce2e2fa5b2';
+import { element as el, safeLink } from '../core/dom.js?v=74ce2e2fa5b2';
+import { startRouter } from '../core/router.js?v=74ce2e2fa5b2';
+import { watchDesign } from '../design/runtime.js?v=74ce2e2fa5b2';
+import { beginDesignLoad, designFailed } from '../design/boot.js?v=74ce2e2fa5b2';
+import { presetDesign } from '../design/model.js?v=74ce2e2fa5b2';
+import { publicHome, publicHeader, publicFooter, contentCard, officialsRoster } from '../design/public-renderer.js?v=74ce2e2fa5b2';
+import { watchAvailability, maintenanceSurface } from './availability.js?v=74ce2e2fa5b2';
+import { watchCovers } from './carousel.js?v=74ce2e2fa5b2';
+import { installPhotoViewer } from './photo-viewer.js?v=74ce2e2fa5b2';
+import { defaultVisibility, hiddenDirectoryGroups, moduleVisible } from '../data/visibility.js?v=74ce2e2fa5b2';
+import { watchVisibility, unavailableSurface } from './visibility.js?v=74ce2e2fa5b2';
 
 const PUBLIC_ROUTES = Object.freeze({
   announcements: { table: 'announcements', title: 'News & Updates' },

@@ -4,7 +4,7 @@
   "short_name": "BRGYSI",
   "description": "BRGYSI staff dashboard for Barangay Sibulan.",
   "lang": "en",
-  "start_url": "./login.html?next=dashboard",
+  "start_url": "./login.html?next=admin-dashboard",
   "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",

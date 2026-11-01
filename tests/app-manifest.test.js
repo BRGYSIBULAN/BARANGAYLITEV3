@@ -18,7 +18,7 @@ test('BRGYSI installs inside the existing website scope with genuine PNG sizes',
   assert.equal(manifest.display, 'standalone');
   assert.equal(manifest.id, './');
   assert.equal(manifest.scope, './');
-  assert.equal(manifest.start_url, './login.html?next=dashboard');
+  assert.equal(manifest.start_url, './login.html?next=admin-dashboard');
   assert.equal(manifest.icons.some(icon => icon.sizes === '192x192'), true);
   assert.equal(manifest.icons.some(icon => icon.sizes === '512x512'), true);
   for (const icon of manifest.icons) {
@@ -37,7 +37,8 @@ test('installed-app launch returns authenticated staff to the correct dashboard'
   assert.equal(start.pathname, '/BARANGAYLITEV3/login.html');
   const next = start.searchParams.get('next');
   assert.equal(staffDestination('admin', next), 'admin/index.html#dashboard');
-  assert.equal(staffDestination('editor', next), 'editor/index.html#dashboard');
+  assert.throws(() => staffDestination('editor', next), /System Admin access/);
+  assert.throws(() => staffDestination(undefined, next), /System Admin access/);
   // Installation is not permission: non-dashboard URLs cannot be smuggled into the destination.
   assert.equal(staffDestination('admin', 'https://example.test/'), 'admin/index.html');
 });

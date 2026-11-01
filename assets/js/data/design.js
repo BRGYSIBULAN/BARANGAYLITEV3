@@ -3,8 +3,8 @@
  * Depends on: site_settings(id=1), existing admin RLS, and pure design/model.js validators.
  * Debug: DESIGN_CONFLICT means another writer changed the JSON; reload before publishing.
  */
-import { unwrap } from '../core/client.js?v=a3648db587e2';
-import { DESIGN_KEY, normalizeDesign, mergeDesign } from '../design/model.js?v=a3648db587e2';
+import { unwrap } from '../core/client.js?v=74ce2e2fa5b2';
+import { DESIGN_KEY, normalizeDesign, mergeDesign } from '../design/model.js?v=74ce2e2fa5b2';
 const SELECT = 'id,design_theme,updated_at';
 
 /** Snapshot includes the exact JSON baseline for atomic compare-and-set, not a cached role. */

@@ -5,6 +5,10 @@
  */
 export function staffDestination(role, requested = '') {
   const admin = role === 'admin';
+  if (requested === 'admin-dashboard') {
+    if (!admin) throw new Error('System Admin access is required for BRGYSI.');
+    return 'admin/index.html#dashboard';
+  }
   // The installed BRGYSI app always requests its role-appropriate dashboard after login.
   const allowed = admin ? ['dashboard', 'settings', 'visibility', 'design-studio', 'covers', 'pages'] : ['dashboard', 'pages'];
   const hash = allowed.includes(requested) ? '#' + requested : '';

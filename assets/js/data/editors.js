@@ -3,7 +3,7 @@
  * Depends on: System Admin authorization and the deployed manage-editors Edge Function.
  * Debug: inspect action/payload and function errors; do not bypass it with Auth admin keys.
  */
-import { unwrap } from '../core/client.js?v=a3648db587e2';
+import { unwrap } from '../core/client.js?v=74ce2e2fa5b2';
 
 export function createEditors(client, auth) {
   /** All account changes stay behind the same server-side authorization boundary. */

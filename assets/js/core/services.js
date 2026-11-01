@@ -3,21 +3,21 @@
  * Depends on: core client/auth and the modules under data/.
  * Debug: follow a service name here to its implementation; tests inject a mock client.
  */
-import { getClient } from './client.js?v=a3648db587e2';
-import { createAuth } from './auth.js?v=a3648db587e2';
-import { createContent } from '../data/content.js?v=a3648db587e2';
-import { createSettings } from '../data/settings.js?v=a3648db587e2';
-import { createVerification } from '../data/verification.js?v=a3648db587e2';
-import { createStorage } from '../data/storage.js?v=a3648db587e2';
-import { createEditors } from '../data/editors.js?v=a3648db587e2';
-import { createApplications } from '../data/applications.js?v=a3648db587e2';
-import { createDesign } from '../data/design.js?v=a3648db587e2';
-import { createCovers } from '../data/covers.js?v=a3648db587e2';
-import { createUsage } from '../data/usage.js?v=a3648db587e2';
-import { createVisibility } from '../data/visibility.js?v=a3648db587e2';
-import { createPermissions } from '../data/permissions.js?v=a3648db587e2';
-import { createActivity } from '../data/activity.js?v=a3648db587e2';
-import { createDirectory } from '../data/directory.js?v=a3648db587e2';
+import { getClient } from './client.js?v=74ce2e2fa5b2';
+import { createAuth } from './auth.js?v=74ce2e2fa5b2';
+import { createContent } from '../data/content.js?v=74ce2e2fa5b2';
+import { createSettings } from '../data/settings.js?v=74ce2e2fa5b2';
+import { createVerification } from '../data/verification.js?v=74ce2e2fa5b2';
+import { createStorage } from '../data/storage.js?v=74ce2e2fa5b2';
+import { createEditors } from '../data/editors.js?v=74ce2e2fa5b2';
+import { createApplications } from '../data/applications.js?v=74ce2e2fa5b2';
+import { createDesign } from '../data/design.js?v=74ce2e2fa5b2';
+import { createCovers } from '../data/covers.js?v=74ce2e2fa5b2';
+import { createUsage } from '../data/usage.js?v=74ce2e2fa5b2';
+import { createVisibility } from '../data/visibility.js?v=74ce2e2fa5b2';
+import { createPermissions } from '../data/permissions.js?v=74ce2e2fa5b2';
+import { createActivity } from '../data/activity.js?v=74ce2e2fa5b2';
+import { createDirectory } from '../data/directory.js?v=74ce2e2fa5b2';
 
 /** Dependency injection keeps tests away from production accounts and records. */
 export function createServices(client) {

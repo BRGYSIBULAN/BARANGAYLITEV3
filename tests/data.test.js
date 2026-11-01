@@ -209,3 +209,9 @@ test('applications never create an account when name validation fails', async ()
   await assert.rejects(createApplications(client, allowed).apply({ displayName: 'Test Name', email: 'test@example.com', password: 'validpassword', confirmation: 'validpassword' }), /not found/);
   assert.deepEqual(client.log, [{ rpc: 'can_apply_content_admin', args: { candidate_name: 'Test Name' } }]);
 });
+
+test('BRGYSI admin-only login rejects a valid editor and clears the new local session', async () => {
+  const client = mockClient({ profile: { role: 'editor', is_active: true } });
+  await assert.rejects(createAuth(client).signIn('editor@example.test', 'synthetic-password', ['admin']), /required staff access/);
+  assert.deepEqual(client.log.at(-1), { signOut: { scope: 'local' } });
+});

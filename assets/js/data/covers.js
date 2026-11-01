@@ -3,7 +3,7 @@
  * Depends on: site_settings.design_theme, existing admin RLS and branding-media uploads.
  * Debug: a conflict means reload first; failed saves retain uploads instead of breaking links.
  */
-import { unwrap } from '../core/client.js?v=a3648db587e2';
+import { unwrap } from '../core/client.js?v=74ce2e2fa5b2';
 const KEY = 'brgyweblitev3_covers';
 const SELECT = 'id,design_theme,updated_at';
 /** Cover data is public content; never store billing, credentials or private records here. */

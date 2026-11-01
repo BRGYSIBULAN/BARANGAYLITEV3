@@ -3,13 +3,13 @@
  * Depends on: login.html field IDs and core/auth.js through the service container.
  * Debug: form errors appear in #status; incorrect redirects require checking the live role.
  */
-import { getServices } from './core/services.js?v=a3648db587e2';
-import { accessSurface, applyAccessCover } from './design/access-renderer.js?v=a3648db587e2';
-import { watchDesign } from './design/runtime.js?v=a3648db587e2';
-import { designFailed } from './design/boot.js?v=a3648db587e2';
-import { brand } from './design/public-renderer.js?v=a3648db587e2';
-import { staffDestination } from './core/navigation.js?v=a3648db587e2';
-import { rememberDevice, setRememberDevice } from './core/client.js?v=a3648db587e2';
+import { getServices } from './core/services.js?v=74ce2e2fa5b2';
+import { accessSurface, applyAccessCover } from './design/access-renderer.js?v=74ce2e2fa5b2';
+import { watchDesign } from './design/runtime.js?v=74ce2e2fa5b2';
+import { designFailed } from './design/boot.js?v=74ce2e2fa5b2';
+import { brand } from './design/public-renderer.js?v=74ce2e2fa5b2';
+import { staffDestination } from './core/navigation.js?v=74ce2e2fa5b2';
+import { rememberDevice, setRememberDevice } from './core/client.js?v=74ce2e2fa5b2';
 
 // Waiting for DOMContentLoaded also waits for the deferred SDK script.
 function start() {
@@ -31,11 +31,20 @@ function start() {
   }
   catch (error) { designFailed(); status.textContent = error.message; button.disabled = true; return; }
   const requested = new URLSearchParams(location.search).get('next');
-  const destination = role => staffDestination(role, requested);
+  // Include the earlier installed-app URL so existing home-screen installations are protected too.
+  const adminApp = ['admin-dashboard', 'dashboard'].includes(requested);
+  const destination = role => staffDestination(role, adminApp ? 'admin-dashboard' : requested);
+  if (adminApp) {
+    document.querySelector('a[href="signup.html"]')?.remove();
+    document.querySelector('.access-card h1 + p').textContent = 'System Admin account required. Installing the app does not grant access.';
+  }
   let submitting = false;
   // Reuse a valid V3 session, but do not race a newly submitted login form.
   auth.currentStaff().then(staff => {
-    if (staff && !submitting) location.replace(destination(staff.profile.role));
+    if (staff && !submitting) {
+      if (adminApp && staff.profile.role !== 'admin') { status.textContent = 'System Admin access is required for BRGYSI.'; return; }
+      location.replace(destination(staff.profile.role));
+    }
   }).catch(() => { status.textContent = 'Sign in with your existing account.'; });
   form.addEventListener('submit', async event => {
     event.preventDefault();
@@ -47,7 +56,7 @@ function start() {
     try {
       // Choose where the SDK keeps its session before authenticating; never store password bytes.
       setRememberDevice(form.elements.remember.checked);
-      const staff = await auth.signIn(form.elements.email.value, form.elements.password.value);
+      const staff = await auth.signIn(form.elements.email.value, form.elements.password.value, adminApp ? ['admin'] : ['admin', 'editor']);
       // Audit failure must not trap a valid account on the login screen.
       await services.activity.recordStaff('auth.login', 'authentication', 'Signed in to the staff workspace.').catch(() => {});
       form.elements.password.value = '';
