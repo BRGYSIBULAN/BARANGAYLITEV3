@@ -3,10 +3,10 @@
  * Depends on: model.js section ordering, DOM helpers, and published content/covers passed by caller.
  * Debug: inspect the data-section order and hero cover nesting; sample preview records never enter data services.
  */
-import { element as el, safeLink } from '../core/dom.js?v=96b812c63105';
-import { PRESETS, normalizeDesign } from './model.js?v=96b812c63105';
-import { createCarousel } from '../public/carousel.js?v=96b812c63105';
-import { defaultVisibility, moduleVisible } from '../data/visibility.js?v=96b812c63105';
+import { element as el, safeLink } from '../core/dom.js?v=7a6c0b49dfbb';
+import { PRESETS, normalizeDesign } from './model.js?v=7a6c0b49dfbb';
+import { createCarousel } from '../public/carousel.js?v=7a6c0b49dfbb';
+import { defaultVisibility, moduleVisible } from '../data/visibility.js?v=7a6c0b49dfbb';
 export const SECTIONS = Object.freeze({ announcements: ['Latest updates', 'News & advisories'], services: ['For every resident', 'Barangay services'], officials: ['Public leadership', 'Your barangay officials'], disclosures: ['Open governance', 'Transparency & reports'], gallery_items: ['Life in our barangay', 'Community gallery'], pages: ['Our barangay', 'About & programs'], forms: ['Ready to download', 'Forms & documents'], directory_entries: ['Stay connected', 'Contact directory'] });
 
 /** All links/images are constrained to HTTPS; database HTML is displayed as text, not executed. */

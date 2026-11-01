@@ -1,5 +1,21 @@
 # Troubleshooting guide
 
+## Scheduled database health and phone alerts
+
+`.github/workflows/database-health.yml` runs `scripts/health-check.mjs` on main every six hours at 02:23, 08:23, 14:23, and 20:23 Manila time. It also runs on monitoring/config changes and supports Actions > Database health > Run workflow. The script reads only `site_settings.id=1` with `select=id` through the existing public publishable key. A static GitHub Pages HTTP 200 does not prove database health. Three bounded attempts distinguish brief failures from a failed check; no response bodies, resident records, or keys are logged or changed. This checks database connectivity, not full browser rendering, authentication, or Storage.
+
+Supabase Free can pause projects with low database activity over seven days. A few requests each day are usually sufficient according to Supabase, but this schedule is not a guarantee against pausing. GitHub can delay/drop scheduled runs and automatically disables public-repository schedules after 60 days without repository activity. Review the Actions run history regularly, keep the repository maintained, and re-enable the workflow if disabled. No service auto-upgrade or automatic resume is performed.
+
+Phone delivery is optional and remains unconfigured until the owner subscribes:
+
+1. Install the ntfy Android app and allow its notifications. Subscribe on `https://ntfy.sh` to a random, hard-to-guess topic of at least 20 characters. Unprotected topics are accessible to anyone who knows the name; send only non-sensitive operational status.
+2. In repository Settings > Secrets and variables > Actions, create repository secret `NTFY_TOPIC` with that topic. Keep it out of source code, public issues, and logs. If using authenticated publishing, add `NTFY_TOKEN` as a secret as well.
+3. Run Database health manually with **notify_test** enabled. Confirm the message arrives on the phone; successful publication alone does not prove device delivery. The test fails if notification setup is missing.
+
+Failed checks send one status alert per failed run (at most the configured six-hour cadence); successful routine checks are silent. Recovery messages and visitor/staff activity notifications are not implemented by this workflow. Without ntfy setup, check GitHub Actions results; GitHub's own failure notifications depend on the account's notification settings. This workflow does not restart the previously disabled ChatGPT automation.
+
+Sources: [Supabase project pausing](https://supabase.com/docs/guides/platform/free-project-pausing), [GitHub scheduled workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule), and [ntfy publishing](https://docs.ntfy.sh/publish/).
+
 ## ID record change history
 
 System Admin > ID records > History reads `verification_record_history` through `verification.history`. The database trigger `private.log_verification_record_history` captures INSERT/UPDATE/DELETE in the same transaction as the ID write. It records only ID-editor fields, not QR tokens, timestamps, or Directory-only metadata, and skips updates with no relevant changes. Actor identity comes from `auth.uid()` and the existing profile; privileged operations without a user are explicitly labeled System / database operation. Time is displayed in Manila time.

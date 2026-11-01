@@ -3,12 +3,12 @@
  * Depends on: settings, covers and Storage services; native forms and image compression.
  * Debug: settings errors keep the draft open; cover conflicts require reloading the baseline.
  */
-import { element as el } from '../core/dom.js?v=96b812c63105';
-import { heading, button, editorDialog, confirmationDialog, labelFor } from './ui.js?v=96b812c63105';
-import { optimizeImage } from '../media/images.js?v=96b812c63105';
-import { formatBytes } from '../data/usage.js?v=96b812c63105';
-import { MAINTENANCE_DEFAULTS } from '../data/maintenance.js?v=96b812c63105';
-import { maintenanceSurface } from '../public/availability.js?v=96b812c63105';
+import { element as el } from '../core/dom.js?v=7a6c0b49dfbb';
+import { heading, button, editorDialog, confirmationDialog, labelFor } from './ui.js?v=7a6c0b49dfbb';
+import { optimizeImage } from '../media/images.js?v=7a6c0b49dfbb';
+import { formatBytes } from '../data/usage.js?v=7a6c0b49dfbb';
+import { MAINTENANCE_DEFAULTS } from '../data/maintenance.js?v=7a6c0b49dfbb';
+import { maintenanceSurface } from '../public/availability.js?v=7a6c0b49dfbb';
 
 const GROUPS = [
   { title: 'Barangay identity', keys: ['barangay_name', 'municipality_city', 'province', 'logo_url'] },

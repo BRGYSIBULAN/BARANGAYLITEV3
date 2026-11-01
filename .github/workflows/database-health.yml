@@ -1,0 +1,44 @@
+# Purpose: check the public database every six hours without depending on the paused backend.
+# Depends on: existing public config and optional NTFY_TOPIC / NTFY_TOKEN repository secrets.
+# Debug: Actions > Database health; red runs indicate failed reads or notification tests.
+name: Database health
+
+on:
+  schedule:
+    # UTC 00:23/06:23/12:23/18:23 = Manila 08:23/14:23/20:23/02:23.
+    - cron: '23 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      notify_test:
+        description: Send a test phone alert after a successful database read
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/database-health.yml'
+      - 'scripts/health-check.mjs'
+      - 'assets/js/core/config.js'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: database-health
+  cancel-in-progress: false
+
+jobs:
+  database:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      # Pin the official checkout action; no package installation or admin database key is needed.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Read public database settings
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          NTFY_TOKEN: ${{ secrets.NTFY_TOKEN }}
+          NOTIFY_TEST: ${{ inputs.notify_test == true && 'true' || 'false' }}
+        run: node scripts/health-check.mjs

@@ -4,9 +4,9 @@
  * Debug: refresh deduplicates reads; state changes must dispose the previous page/scanner.
  * Scope: this is website availability, not a replacement for database RLS or file permissions.
  */
-import { element as el } from '../core/dom.js?v=96b812c63105';
-import { brand } from '../design/public-renderer.js?v=96b812c63105';
-import { MAINTENANCE_DEFAULTS } from '../data/maintenance.js?v=96b812c63105';
+import { element as el } from '../core/dom.js?v=7a6c0b49dfbb';
+import { brand } from '../design/public-renderer.js?v=7a6c0b49dfbb';
+import { MAINTENANCE_DEFAULTS } from '../data/maintenance.js?v=7a6c0b49dfbb';
 
 /** Recheck one small settings row, not every content table; hidden tabs do not poll. */
 export function watchAvailability(service, onChange, { intervalMs = 60000 } = {}) {

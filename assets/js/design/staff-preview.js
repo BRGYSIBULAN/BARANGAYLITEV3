@@ -3,8 +3,8 @@
  * Depends on: central CSS and DOM helpers; none of the values represent private records.
  * Debug: counts are omitted; navigation cannot grant access in this isolated preview.
  */
-import { element as el } from '../core/dom.js?v=96b812c63105';
-import { metric, barChart } from '../staff/ui.js?v=96b812c63105';
+import { element as el } from '../core/dom.js?v=7a6c0b49dfbb';
+import { metric, barChart } from '../staff/ui.js?v=7a6c0b49dfbb';
 export function staffPreview(mode) {
   const root = el('div', '', { class: 'workspace' });
   const role = mode === 'admin' ? 'System Admin' : 'Content Admin';
