@@ -341,10 +341,10 @@ test('English interface copy does not translate stored barangay content', () => 
   assert.match(accessSurface('login').textContent, /Use your existing email and password/);
   assert.match(contentCard('announcements', { title: 'Pabatid sa mga residente', excerpt: 'Libreng serbisyo' }).textContent, /Pabatid sa mga residenteLibreng serbisyo/);
 });
-test('Admin login says Welcome and reuses only the existing Cover 1 record', () => {
+test('Admin login uses BRGYSI branding and reuses only the existing Cover 1 record', () => {
   const root = accessSurface('login', { barangay_name: 'Sibulan' }); document.body.append(root);
   try {
-    assert.equal(root.querySelector('.access-card h1').textContent, 'Welcome.');
+    assert.equal(root.querySelector('.access-card h1').textContent, 'BRGYSI Admin Panel');
     assert.equal(applyAccessCover(root, { url: 'https://example.com/cover-one.webp', alt: 'Existing cover' }), true);
     assert.equal(root.querySelectorAll('.access-cover-media img').length, 1);
     assert.equal(root.querySelector('.access-cover-media img').getAttribute('src'), 'https://example.com/cover-one.webp');

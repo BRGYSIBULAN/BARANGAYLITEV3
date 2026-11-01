@@ -3,10 +3,10 @@
  * Depends on: public-renderer brand, DOM helpers, and the central CSS; no auth operations.
  * Debug: preview forms are disabled; live entry modules attach the existing service handlers.
  */
-import { element as el } from '../core/dom.js?v=7a6c0b49dfbb';
-import { brand } from './public-renderer.js?v=7a6c0b49dfbb';
+import { element as el } from '../core/dom.js?v=a3648db587e2';
+import { brand } from './public-renderer.js?v=a3648db587e2';
 export const ACCESS = Object.freeze({
-  login: { title: 'Welcome.', subtitle: 'Sign in with your existing barangay staff account.', button: 'Sign in', fields: [['email', 'Email address', 'email'], ['password', 'Password', 'password']] },
+  login: { title: 'BRGYSI Admin Panel', subtitle: 'Sign in to open your barangay dashboard.', button: 'Open dashboard', fields: [['email', 'Email address', 'email'], ['password', 'Password', 'password']] },
   signup: { title: 'Serve your community.', subtitle: 'Apply for Content Admin access. System Admin approval is required.', button: 'Submit application', fields: [['displayName', 'Full name (as registered)', 'text'], ['email', 'Email address', 'email'], ['position', 'Role / position (optional)', 'text'], ['reason', 'Reason for applying (optional)', 'text'], ['password', 'Password (at least 8 characters)', 'password'], ['confirmation', 'Confirm password', 'password']] },
   activation: { title: 'Activate your access.', subtitle: 'For approved Content Admin accounts with a valid invitation session only.', button: 'Set password & activate', fields: [['password', 'New password (at least 8 characters)', 'password'], ['confirmation', 'Confirm new password', 'password']] },
 });
@@ -39,6 +39,12 @@ export function accessSurface(mode, settings = {}, { preview = false } = {}) {
     const field = el('div', '', { class: 'field' });
     const input = el('input', '', { id: name, name, type, required: ['position', 'reason'].includes(name) ? null : '', maxlength: type === 'password' ? 128 : 500, autocomplete: name === 'email' ? 'username' : type === 'password' ? mode === 'login' ? 'current-password' : 'new-password' : name === 'displayName' ? 'name' : 'off', minlength: type === 'password' && mode !== 'login' ? 8 : null });
     input.disabled = preview; field.append(el('label', label, { for: name }), input); form.append(field);
+  }
+  if (mode === 'login') {
+    const remember = el('label', '', { class: 'remember-device', for: 'remember-device' });
+    const checkbox = el('input', '', { id: 'remember-device', name: 'remember', type: 'checkbox', 'aria-describedby': 'remember-help' });
+    checkbox.disabled = preview; remember.append(checkbox, el('span', 'Remember me on this device'));
+    form.append(remember, el('small', 'Use only on your own device. Your password is not saved by BRGYSI.', { id: 'remember-help', class: 'muted' }));
   }
   const submit = el('button', def.button, { type: 'submit', class: 'primary' }); submit.disabled = preview; form.append(submit);
   card.append(form, el('p', preview ? 'Preview only — form submissions are disabled.' : '', { id: 'status', role: 'status', 'aria-live': 'polite', class: 'studio-message' }));

@@ -3,12 +3,13 @@
  * Depends on: login.html field IDs and core/auth.js through the service container.
  * Debug: form errors appear in #status; incorrect redirects require checking the live role.
  */
-import { getServices } from './core/services.js?v=7a6c0b49dfbb';
-import { accessSurface, applyAccessCover } from './design/access-renderer.js?v=7a6c0b49dfbb';
-import { watchDesign } from './design/runtime.js?v=7a6c0b49dfbb';
-import { designFailed } from './design/boot.js?v=7a6c0b49dfbb';
-import { brand } from './design/public-renderer.js?v=7a6c0b49dfbb';
-import { staffDestination } from './core/navigation.js?v=7a6c0b49dfbb';
+import { getServices } from './core/services.js?v=a3648db587e2';
+import { accessSurface, applyAccessCover } from './design/access-renderer.js?v=a3648db587e2';
+import { watchDesign } from './design/runtime.js?v=a3648db587e2';
+import { designFailed } from './design/boot.js?v=a3648db587e2';
+import { brand } from './design/public-renderer.js?v=a3648db587e2';
+import { staffDestination } from './core/navigation.js?v=a3648db587e2';
+import { rememberDevice, setRememberDevice } from './core/client.js?v=a3648db587e2';
 
 // Waiting for DOMContentLoaded also waits for the deferred SDK script.
 function start() {
@@ -19,6 +20,7 @@ function start() {
   let auth, services;
   try {
     services = getServices(); auth = services.auth;
+    form.elements.remember.checked = rememberDevice();
     watchDesign(services.design).then(stop => window.addEventListener('pagehide', stop, { once: true }));
     // Update only identity and the decorative Cover 1 layer; never re-render a
     // form after the user starts typing or copy the existing cover record.
@@ -43,6 +45,8 @@ function start() {
     button.disabled = true;
     status.textContent = 'Signing in…';
     try {
+      // Choose where the SDK keeps its session before authenticating; never store password bytes.
+      setRememberDevice(form.elements.remember.checked);
       const staff = await auth.signIn(form.elements.email.value, form.elements.password.value);
       // Audit failure must not trap a valid account on the login screen.
       await services.activity.recordStaff('auth.login', 'authentication', 'Signed in to the staff workspace.').catch(() => {});

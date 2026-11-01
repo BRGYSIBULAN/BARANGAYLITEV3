@@ -4,16 +4,16 @@
  * Debug: manual needs ID plus last name; camera permission is requested only after Start camera.
  * Privacy: never list records, navigate arbitrary scanned URLs, upload frames, or log tokens.
  */
-import { getServices } from '../core/services.js?v=7a6c0b49dfbb';
-import { element as el } from '../core/dom.js?v=7a6c0b49dfbb';
-import { extractQrToken } from '../data/verification.js?v=7a6c0b49dfbb';
-import { fullName } from '../data/id-model.js?v=7a6c0b49dfbb';
-import { watchDesign } from '../design/runtime.js?v=7a6c0b49dfbb';
-import { beginDesignLoad, designFailed } from '../design/boot.js?v=7a6c0b49dfbb';
-import { publicHeader } from '../design/public-renderer.js?v=7a6c0b49dfbb';
-import { watchAvailability, maintenanceSurface } from './availability.js?v=7a6c0b49dfbb';
-import { defaultVisibility, moduleVisible } from '../data/visibility.js?v=7a6c0b49dfbb';
-import { watchVisibility, unavailableSurface } from './visibility.js?v=7a6c0b49dfbb';
+import { getServices } from '../core/services.js?v=a3648db587e2';
+import { element as el } from '../core/dom.js?v=a3648db587e2';
+import { extractQrToken } from '../data/verification.js?v=a3648db587e2';
+import { fullName } from '../data/id-model.js?v=a3648db587e2';
+import { watchDesign } from '../design/runtime.js?v=a3648db587e2';
+import { beginDesignLoad, designFailed } from '../design/boot.js?v=a3648db587e2';
+import { publicHeader } from '../design/public-renderer.js?v=a3648db587e2';
+import { watchAvailability, maintenanceSurface } from './availability.js?v=a3648db587e2';
+import { defaultVisibility, moduleVisible } from '../data/visibility.js?v=a3648db587e2';
+import { watchVisibility, unavailableSurface } from './visibility.js?v=a3648db587e2';
 
 /** Render only the fields authorized by the existing public verification RPC. */
 export function verificationResult(record) {
@@ -46,7 +46,7 @@ export function mountVerification(root, service, { checkAvailability = async () 
   const columns = el('div', '', { class: 'verify-options' }); columns.append(manual, scan);
   const result = el('div', '', { class: 'verification-output', role: 'status', 'aria-live': 'polite' }); root.append(columns, result);
   function stopCamera() { cameraGeneration++; scanner?.destroy(); scanner = undefined; video.srcObject?.getTracks().forEach(track => track.stop()); video.srcObject = null; video.hidden = true; start.disabled = false; stop.disabled = true; scanStatus.textContent = 'Camera is off.'; }
-  async function getScanner() { if (!Scanner) Scanner = (await import('../../vendor/qr-scanner.min.js?v=7a6c0b49dfbb')).default; return Scanner; }
+  async function getScanner() { if (!Scanner) Scanner = (await import('../../vendor/qr-scanner.min.js?v=a3648db587e2')).default; return Scanner; }
   async function lookup(operation, kind) {
     if (disposed) return;
     const request = ++generation; stopCamera(); result.replaceChildren(el('p', 'Checking the existing ID record…', { class: 'notice' })); submit.disabled = true;

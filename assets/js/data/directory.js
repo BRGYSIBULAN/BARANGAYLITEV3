@@ -3,8 +3,8 @@
  * Depends on: the three directory RPCs installed on the existing BRGYWEB-LITE Supabase project.
  * Debug: check the requested section/view first, then RPC privileges and the person's ACTIVE status.
  */
-import { unwrap } from '../core/client.js?v=7a6c0b49dfbb';
-import { DIRECTORY_SECTIONS } from './contracts.js?v=7a6c0b49dfbb';
+import { unwrap } from '../core/client.js?v=a3648db587e2';
+import { DIRECTORY_SECTIONS } from './contracts.js?v=a3648db587e2';
 
 const SECTION_KEYS = new Set(Object.keys(DIRECTORY_SECTIONS));
 const STAFF_VIEWS = new Set(['section', 'unassigned', 'all', 'published', 'hidden']);

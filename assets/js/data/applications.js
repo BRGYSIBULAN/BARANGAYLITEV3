@@ -4,7 +4,7 @@
  * Debug: identify which stage failed: name check, signup, request insert, or activation.
  * These operations are never a System Admin account creation/reset path.
  */
-import { unwrap } from '../core/client.js?v=7a6c0b49dfbb';
+import { unwrap } from '../core/client.js?v=a3648db587e2';
 
 // Existing Content Admin signup/activation logic; never used for System Admin.
 export function createApplications(client, auth) {

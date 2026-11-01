@@ -3,10 +3,10 @@
  * Depends on: visibility and content services plus the shared staff UI primitives.
  * Debug: each card owns one dirty value; saving one card must preserve other unsaved cards.
  */
-import { element as el } from '../core/dom.js?v=7a6c0b49dfbb';
-import { heading, button, badge } from './ui.js?v=7a6c0b49dfbb';
-import { VISIBILITY_MODULES, defaultVisibility, moduleVisible } from '../data/visibility.js?v=7a6c0b49dfbb';
-import { DIRECTORY_SUBCATEGORIES } from '../data/contracts.js?v=7a6c0b49dfbb';
+import { element as el } from '../core/dom.js?v=a3648db587e2';
+import { heading, button, badge } from './ui.js?v=a3648db587e2';
+import { VISIBILITY_MODULES, defaultVisibility, moduleVisible } from '../data/visibility.js?v=a3648db587e2';
+import { DIRECTORY_SUBCATEGORIES } from '../data/contracts.js?v=a3648db587e2';
 
 const cloneConfig = config => ({ version: 1, modules: { ...config.modules }, groups: { ...config.groups } });
 

@@ -3,10 +3,10 @@
  * Depends on: existing aggregate/list services and lightweight UI components; no sample live data.
  * Debug: missing values stay unavailable; section errors do not erase successful sections.
  */
-import { element as el, safeLink } from '../core/dom.js?v=7a6c0b49dfbb';
-import { CONTENT } from '../data/contracts.js?v=7a6c0b49dfbb';
-import { formatBytes, GITHUB_REPO } from '../data/usage.js?v=7a6c0b49dfbb';
-import { heading, metric, barChart, button, badge, dateText } from './ui.js?v=7a6c0b49dfbb';
+import { element as el, safeLink } from '../core/dom.js?v=a3648db587e2';
+import { CONTENT } from '../data/contracts.js?v=a3648db587e2';
+import { formatBytes, GITHUB_REPO } from '../data/usage.js?v=a3648db587e2';
+import { heading, metric, barChart, button, badge, dateText } from './ui.js?v=a3648db587e2';
 
 /** Dashboard data is queried only on entry/refresh, not continuously in the background. */
 export function mountDashboard(root, services, isAdmin, isCurrent) {

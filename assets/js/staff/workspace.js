@@ -3,22 +3,22 @@
  * Depends on: existing Auth/RLS services, route modules and the shared central stylesheet.
  * Debug: access is rechecked on every route/write; stale views are disposed before navigation.
  */
-import { getServices } from '../core/services.js?v=7a6c0b49dfbb';
-import { getClient } from '../core/client.js?v=7a6c0b49dfbb';
-import { CONTENT } from '../data/contracts.js?v=7a6c0b49dfbb';
-import { element as el } from '../core/dom.js?v=7a6c0b49dfbb';
-import { startRouter } from '../core/router.js?v=7a6c0b49dfbb';
-import { applyDesign, watchDesign } from '../design/runtime.js?v=7a6c0b49dfbb';
-import { designFailed } from '../design/boot.js?v=7a6c0b49dfbb';
-import { mountStudio } from '../design/studio.js?v=7a6c0b49dfbb';
-import { mountContent } from './content-screen.js?v=7a6c0b49dfbb';
-import { mountDashboard, mountUsage } from './dashboard.js?v=7a6c0b49dfbb';
-import { mountSettings, mountCovers } from './settings-screen.js?v=7a6c0b49dfbb';
-import { mountAccounts } from './accounts-screen.js?v=7a6c0b49dfbb';
-import { mountVisibility } from './visibility-screen.js?v=7a6c0b49dfbb';
-import { mountActivity } from './activity-screen.js?v=7a6c0b49dfbb';
-import { DELEGATED_MODULES } from '../data/permissions.js?v=7a6c0b49dfbb';
-import { DIRECTORY_ROUTE_KEYS, mountDirectory } from './directory-screen.js?v=7a6c0b49dfbb';
+import { getServices } from '../core/services.js?v=a3648db587e2';
+import { getClient } from '../core/client.js?v=a3648db587e2';
+import { CONTENT } from '../data/contracts.js?v=a3648db587e2';
+import { element as el } from '../core/dom.js?v=a3648db587e2';
+import { startRouter } from '../core/router.js?v=a3648db587e2';
+import { applyDesign, watchDesign } from '../design/runtime.js?v=a3648db587e2';
+import { designFailed } from '../design/boot.js?v=a3648db587e2';
+import { mountStudio } from '../design/studio.js?v=a3648db587e2';
+import { mountContent } from './content-screen.js?v=a3648db587e2';
+import { mountDashboard, mountUsage } from './dashboard.js?v=a3648db587e2';
+import { mountSettings, mountCovers } from './settings-screen.js?v=a3648db587e2';
+import { mountAccounts } from './accounts-screen.js?v=a3648db587e2';
+import { mountVisibility } from './visibility-screen.js?v=a3648db587e2';
+import { mountActivity } from './activity-screen.js?v=a3648db587e2';
+import { DELEGATED_MODULES } from '../data/permissions.js?v=a3648db587e2';
+import { DIRECTORY_ROUTE_KEYS, mountDirectory } from './directory-screen.js?v=a3648db587e2';
 
 /** Staff navigation groups one database-backed Directory into three focused managers. */
 export const STAFF_CONTENT_ROUTES = Object.freeze([
@@ -66,7 +66,7 @@ export async function startWorkspace(workspace) {
     routes.push(...protectedRoutes.filter(item => isAdmin || delegated[item.permission]));
     if (isAdmin) routes.push({ key: 'editors', label: 'Content Admins', glyph: '♙' }, { key: 'activity', label: 'Activity & analytics', glyph: '◌' });
     nav.replaceChildren();
-    const navBrand = el('div', '', { class: 'nav-brand' }); navBrand.append(el('span', 'B', { class: 'nav-mark', 'aria-hidden': 'true' }), el('strong', 'Barangay workspace'), el('small', isAdmin ? 'SYSTEM ADMIN' : 'CONTENT ADMIN')); nav.append(navBrand);
+    const navBrand = el('div', '', { class: 'nav-brand' }); navBrand.append(el('span', 'B', { class: 'nav-mark', 'aria-hidden': 'true' }), el('strong', 'BRGYSI'), el('small', isAdmin ? 'SYSTEM ADMIN' : 'CONTENT ADMIN')); nav.append(navBrand);
     const list = el('ul');
     let directoryGroupAdded = false, managementGroupAdded = false;
     routes.forEach(({ key, label, glyph, parent }, index) => {
@@ -100,7 +100,7 @@ export async function startWorkspace(workspace) {
       const item = routes.find(entry => entry.key === route); view.replaceChildren(); currentCleanup = null;
       document.querySelector('#workspace-title').hidden = true;
       if (!item) { status.textContent = 'Module not found.'; return; }
-      document.title = item.label + ' — BRGYWEBLITEV3';
+      document.title = item.label + ' — BRGYSI';
       nav.querySelectorAll('a').forEach(link => { if (link.hash === '#' + route) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current'); });
       status.textContent = 'Checking workspace access…';
       try {

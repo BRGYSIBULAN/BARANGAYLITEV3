@@ -5,7 +5,8 @@
  */
 export function staffDestination(role, requested = '') {
   const admin = role === 'admin';
-  const allowed = admin ? ['settings', 'visibility', 'design-studio', 'covers', 'pages'] : ['pages'];
+  // The installed BRGYSI app always requests its role-appropriate dashboard after login.
+  const allowed = admin ? ['dashboard', 'settings', 'visibility', 'design-studio', 'covers', 'pages'] : ['dashboard', 'pages'];
   const hash = allowed.includes(requested) ? '#' + requested : '';
   return (admin ? 'admin/index.html' : 'editor/index.html') + hash;
 }

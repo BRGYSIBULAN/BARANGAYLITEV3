@@ -3,7 +3,7 @@
  * Depends on: activity RLS plus record/delete RPCs; it never stores public visitor identities.
  * Debug: check the metric allowlist, selected Manila period, then RPC/table permissions.
  */
-import { unwrap } from '../core/client.js?v=7a6c0b49dfbb';
+import { unwrap } from '../core/client.js?v=a3648db587e2';
 
 export const ACTIVITY_PERIODS = Object.freeze([
   { key: 'daily', label: 'Daily' },

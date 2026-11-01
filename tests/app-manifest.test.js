@@ -6,6 +6,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { staffDestination } from '../assets/js/core/navigation.js';
 
 const root = new URL('../', import.meta.url);
 
@@ -17,7 +18,7 @@ test('BRGYSI installs inside the existing website scope with genuine PNG sizes',
   assert.equal(manifest.display, 'standalone');
   assert.equal(manifest.id, './');
   assert.equal(manifest.scope, './');
-  assert.equal(manifest.start_url, './index.html');
+  assert.equal(manifest.start_url, './login.html?next=dashboard');
   assert.equal(manifest.icons.some(icon => icon.sizes === '192x192'), true);
   assert.equal(manifest.icons.some(icon => icon.sizes === '512x512'), true);
   for (const icon of manifest.icons) {
@@ -28,6 +29,17 @@ test('BRGYSI installs inside the existing website scope with genuine PNG sizes',
   // A relative manifest must remain under this site's path when deployed as GitHub Pages.
   const deployed = new URL('https://brgysibulan.github.io/BARANGAYLITEV3/manifest.webmanifest');
   assert.equal(new URL(manifest.scope, deployed).pathname, '/BARANGAYLITEV3/');
+});
+
+test('installed-app launch returns authenticated staff to the correct dashboard', async () => {
+  const manifest = JSON.parse(await readFile(new URL('manifest.webmanifest', root), 'utf8'));
+  const start = new URL(manifest.start_url, 'https://brgysibulan.github.io/BARANGAYLITEV3/manifest.webmanifest');
+  assert.equal(start.pathname, '/BARANGAYLITEV3/login.html');
+  const next = start.searchParams.get('next');
+  assert.equal(staffDestination('admin', next), 'admin/index.html#dashboard');
+  assert.equal(staffDestination('editor', next), 'editor/index.html#dashboard');
+  // Installation is not permission: non-dashboard URLs cannot be smuggled into the destination.
+  assert.equal(staffDestination('admin', 'https://example.test/'), 'admin/index.html');
 });
 
 test('public and protected entry points resolve the same manifest and seal', async () => {

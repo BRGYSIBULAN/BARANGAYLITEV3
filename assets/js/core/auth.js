@@ -3,7 +3,7 @@
  * Depends on: Supabase Auth and public.profiles; never on a cached UI role.
  * Debug: check Auth first, then the matching profiles.user_id/role/is_active row.
  */
-import { unwrap } from './client.js?v=7a6c0b49dfbb';
+import { unwrap } from './client.js?v=a3648db587e2';
 
 // Profile rows, not editable user_metadata or local role caches, determine access.
 // These checks improve UX; the existing server-side RLS remains authoritative.

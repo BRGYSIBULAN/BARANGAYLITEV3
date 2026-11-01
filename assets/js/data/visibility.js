@@ -4,7 +4,7 @@
  * Debug: a VISIBILITY_CONFLICT means another settings writer won the atomic comparison.
  * Scope: visibility hides presentation only; it never deletes records, files, IDs, or accounts.
  */
-import { unwrap } from '../core/client.js?v=7a6c0b49dfbb';
+import { unwrap } from '../core/client.js?v=a3648db587e2';
 
 export const VISIBILITY_KEY = 'brgyweblitev3_visibility';
 const SELECT = 'id,design_theme,updated_at';

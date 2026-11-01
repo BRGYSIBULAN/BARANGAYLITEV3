@@ -3,14 +3,14 @@
  * Depends on: the same public renderer and design runtime used by actual website shells.
  * Debug: only same-origin messages from the embedding parent with its channel are accepted.
  */
-import { applyDesign } from './runtime.js?v=7a6c0b49dfbb';
-import { designReady } from './boot.js?v=7a6c0b49dfbb';
-import { publicHome } from './public-renderer.js?v=7a6c0b49dfbb';
-import { SAMPLE_SETTINGS, SAMPLE_CONTENT } from './sample.js?v=7a6c0b49dfbb';
-import { accessSurface } from './access-renderer.js?v=7a6c0b49dfbb';
-import { staffPreview } from './staff-preview.js?v=7a6c0b49dfbb';
-import { publicHeader, publicFooter, contentCard, SECTIONS } from './public-renderer.js?v=7a6c0b49dfbb';
-import { element as el } from '../core/dom.js?v=7a6c0b49dfbb';
+import { applyDesign } from './runtime.js?v=a3648db587e2';
+import { designReady } from './boot.js?v=a3648db587e2';
+import { publicHome } from './public-renderer.js?v=a3648db587e2';
+import { SAMPLE_SETTINGS, SAMPLE_CONTENT } from './sample.js?v=a3648db587e2';
+import { accessSurface } from './access-renderer.js?v=a3648db587e2';
+import { staffPreview } from './staff-preview.js?v=a3648db587e2';
+import { publicHeader, publicFooter, contentCard, SECTIONS } from './public-renderer.js?v=a3648db587e2';
+import { element as el } from '../core/dom.js?v=a3648db587e2';
 const channel = new URLSearchParams(location.search).get('channel');
 const root = document.querySelector('#preview-root');
 let design;
