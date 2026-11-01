@@ -1,5 +1,13 @@
 # Troubleshooting guide
 
+## BRGYSI home-screen app identity
+
+`manifest.webmanifest` names the installed web app **BRGYSI**, opens the existing `index.html` in standalone mode, and limits its scope to this repository's GitHub Pages path. The public, login, verification, and staff HTML shells link to the same manifest, with relative paths that also work under `admin/` and `editor/`. The app uses the existing accounts, permissions, database, and public website; installing it grants no additional access.
+
+`assets/images/app/` contains installation-size copies of the Barangay Sibulan seal from the existing `site_settings.logo_url` branding record, retrieved November 1, 2026. The artwork was fitted without cropping or redrawing into 192/512 px icons, an Apple 180 px icon, and a separate 512 px maskable icon with extra safe space. These are install assets, not a replacement for the dashboard-managed logo in the website header. If the barangay changes its official logo, regenerate these install icons from the current branding record as well; installed-icon refresh timing depends on the browser.
+
+On Android Chrome, open the website and choose **Install app** or **Add to Home screen** from the browser menu. Confirm the proposed name and icon on the actual phone. Manifest metadata is verified by `tests/app-manifest.test.js`; device installation still needs a phone check. This change provides app identity and installation metadata only. It does not add offline caching, a service worker, push subscription, or background notifications, and it never automatically prompts for notification permission. The optional ntfy workflow remains separate until a BRGYSI push backend is implemented.
+
 ## Scheduled database health and phone alerts
 
 `.github/workflows/database-health.yml` runs `scripts/health-check.mjs` on main every six hours at 02:23, 08:23, 14:23, and 20:23 Manila time. It also runs on monitoring/config changes and supports Actions > Database health > Run workflow. The script reads only `site_settings.id=1` with `select=id` through the existing public publishable key. A static GitHub Pages HTTP 200 does not prove database health. Three bounded attempts distinguish brief failures from a failed check; no response bodies, resident records, or keys are logged or changed. This checks database connectivity, not full browser rendering, authentication, or Storage.
